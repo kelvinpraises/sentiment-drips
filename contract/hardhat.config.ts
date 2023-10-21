@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
   },
 
   paths: {
-    sources: "./src",
+    // sources: ".",
     cache: "./cache_hardhat",
   },
 

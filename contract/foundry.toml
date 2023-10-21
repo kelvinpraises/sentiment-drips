@@ -1,6 +1,6 @@
 # Default Profile
 [profile.default]
-solc-version = "0.8.19"
+auto_detect_solc = true
 optimizer = true
 optimizer-runs = 1_000
 src = 'src'
