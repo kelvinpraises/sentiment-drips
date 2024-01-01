@@ -13,6 +13,7 @@ import {
 } from "drip-network/Drips.sol";
 import {ManagedProxy} from "drip-network/Managed.sol";
 import {Test} from "forge-std/Test.sol";
+import "forge-std/console.sol";
 import {IERC20, ERC20PresetFixedSupply} from "openzeppelin/token/ERC20/presets/ERC20PresetFixedSupply.sol";
 
 contract AddressDriverTest is Test {
@@ -24,7 +25,9 @@ contract AddressDriverTest is Test {
     address internal admin = address(1);
     uint256 internal thisId;
     address internal user = address(2);
+    address internal user2 = address(3);
     uint256 internal accountId;
+    uint256 internal accountId2;
 
     function setUp() public {
         Drips dripsLogic = new Drips(10);
@@ -42,6 +45,7 @@ contract AddressDriverTest is Test {
 
         thisId = driver.calcAccountId(address(this));
         accountId = driver.calcAccountId(user);
+        accountId2 = driver.calcAccountId(user2);
 
         erc20 = new ERC20PresetFixedSupply("test", "test", type(uint136).max, address(this));
         erc20.approve(address(driver), type(uint256).max);
@@ -89,11 +93,67 @@ contract AddressDriverTest is Test {
         assertEq(drips.splittable(accountId, erc20), amt, "Invalid received amount");
     }
 
-    function testSetStreams() public {
+    function testReceivableStreams() public {
+        uint32 duration = 3600 * 24 * 3;
+        uint128 decimals = 1000_000_000_000_000_000; // 18
+        uint128 amt = 20_000 * decimals;
+        uint128 amt1 = 1 * decimals;
+        uint128 amt2 = 10_000 * decimals;
+
+        // Top-up
+        StreamReceiver[] memory receivers = new StreamReceiver[](2);
+        receivers[0] = StreamReceiver(accountId, StreamConfigImpl.create(0, calculateFlowRate(amt1, 60), 0, 60));
+        receivers[1] =
+            StreamReceiver(accountId2, StreamConfigImpl.create(0, calculateFlowRate(2400000000000, 60), 0, 60));
+        uint256 balance = erc20.balanceOf(address(this));
+
+        int128 realBalanceDelta =
+            driver.setStreams(erc20, new StreamReceiver[](0), int128(amt), receivers, 0, 0, address(this));
+
+        assertEq(erc20.balanceOf(address(this)), balance - amt, "Invalid balance after top-up");
+        assertEq(erc20.balanceOf(address(drips)), amt, "Invalid Drips balance after top-up");
+        (,,, uint128 streamsBalance,) = drips.streamsState(thisId, erc20);
+        assertEq(streamsBalance, amt, "Invalid streams balance after top-up");
+        assertEq(realBalanceDelta, int128(amt), "Invalid streams balance delta after top-up");
+        (bytes32 streamsHash,,,,) = drips.streamsState(thisId, erc20);
+        assertEq(streamsHash, drips.hashStreams(receivers), "Invalid streams hash after top-up");
+
+        vm.warp(block.timestamp + (3600 * 24 * 60));
+
+        // accountId
+        uint32 cycles = drips.receivableStreamsCycles(accountId, erc20);
+        uint128 receivableAmt = drips.receiveStreamsResult(accountId, erc20, cycles);
+        uint128 receivedAmt = drips.receiveStreams(accountId, erc20, cycles);
+        console.logUint(cycles);
+        console.logUint(receivableAmt);
+        console.logUint(receivedAmt);
+
+        // accountId2
+        uint32 cycles2 = drips.receivableStreamsCycles(accountId2, erc20);
+        uint128 receivableAmt2 = drips.receiveStreamsResult(accountId2, erc20, cycles2);
+        uint128 receivedAmt2 = drips.receiveStreams(accountId2, erc20, cycles2);
+        console.logUint(cycles2);
+        console.logUint(receivableAmt2);
+        console.logUint(receivedAmt2);
+
+        vm.startPrank(user);
+        drips.split(accountId, erc20, new SplitsReceiver[](0));
+        driver.collect(erc20, user);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        drips.split(accountId2, erc20, new SplitsReceiver[](0));
+        driver.collect(erc20, user2);
+        vm.stopPrank();
+
+        uint256 balance2 = erc20.balanceOf(user2);
+        console.logUint(balance2 / 1000_000_000_000_000_000);
+    }
+
+    function testSetStreams2() public {
         uint128 amt = 5;
 
         // Top-up
-
         StreamReceiver[] memory receivers = new StreamReceiver[](1);
         receivers[0] = StreamReceiver(accountId, StreamConfigImpl.create(0, drips.minAmtPerSec(), 0, 0));
         uint256 balance = erc20.balanceOf(address(this));
@@ -190,5 +250,11 @@ contract AddressDriverTest is Test {
 
     function testEmitAccountMetadataCanBePaused() public canBePausedTest {
         driver.emitAccountMetadata(new AccountMetadata[](0));
+    }
+
+    function calculateFlowRate(uint128 tokensToSend_, uint32 streamingDurationInSeconds_) internal returns (uint160) {
+        // Calculate Precision Token Unit flow rate per second
+        uint160 flowRate = tokensToSend_ * 10 ** 9 / streamingDurationInSeconds_;
+        return flowRate;
     }
 }
