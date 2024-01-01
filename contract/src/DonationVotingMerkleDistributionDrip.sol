@@ -9,7 +9,6 @@ import {Drips} from "./interface/IDrips.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {StreamConfigImpl} from "./StreamConfig.sol";
 
-
 contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributionBaseStrategy {
     /// ================================
     /// ========== Struct ==============
@@ -23,7 +22,7 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
     }
 
     /// @notice Stores the details of the distribution when it's a stream.
-    struct DistributionStream {
+    struct StreamDistribution {
         uint256 index;
         address recipientId;
         uint256 amount;
@@ -52,7 +51,7 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
     AddressDriver public driver;
 
     /// @notice Flag to indicate whether token streaming is required or not.
-    bool public streamDistribution;
+    bool public stream;
 
     /// ===============================
     /// ======== Constructor ==========
@@ -73,14 +72,14 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
     function _beforeInitialize(uint256 _poolId, InitializeData memory _initializeData) internal override {
         IAllo.Pool memory pool = allo.getPool(_poolId);
 
-        if (pool.token == NATIVE && _initializeData.streamDistribution) {
+        if (pool.token == NATIVE && _initializeData.stream) {
             revert INVALID();
         }
 
         drips = Drips(_initializeData.drips);
         caller = Caller(_initializeData.dripsCaller);
         driver = AddressDriver(_initializeData.dripsAddressDriver);
-        streamDistribution = _initializeData.streamDistribution;
+        stream = _initializeData.stream;
 
         if (pool.token != NATIVE) {
             erc20 = IERC20(pool.token);
@@ -92,7 +91,7 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
     /// ============ Internal ==============
     /// ====================================
 
-    /// @notice Allocate tokens to recipients, the Allocation[] max is usually 150.
+    /// @notice Allocate tokens to recipients, the Allocation[] max is usually 100.
     /// @dev This can only be called during the allocation period. Emits an 'BatchAllocationSuccessful()' event.
     /// @param _data The data to be decoded
     /// @custom:data '(Allocations[] allocations)'
@@ -154,13 +153,13 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
         }
     }
 
-    /// @notice Distribute funds to recipients, the Distribution[] max is usually 150.
+    /// @notice Distribute funds to recipients, the Distribution[] max is usually 100.
     /// @dev 'distributionStarted' will be set to 'true' when called. Only the pool manager can call.
     ///      Emits a 'BatchPayoutSuccessful()' event.
     /// @param _data The data to be decoded
-    ///  @custom:data if 'streamDistribution' is 'true' (AddressDriver.StreamReceiver[] prevStreamReceivers,
-    ///                DistributionStream[] distributionStream, int128 amt, hint1 uint32, hint2 uint332, address clawBackAddress)
-    ///  @custom:data if 'streamDistribution' is 'false'(Distribution[] distributions)
+    ///  @custom:data if 'stream' is 'true' (AddressDriver.StreamReceiver[] prevStreamReceivers,
+    ///                StreamDistribution[] streamDistributions, int128 amt, uint32 duration, hint1 uint32, hint2 uint332, address clawBackAddress)
+    ///  @custom:data if 'stream' is 'false'(Distribution[] distributions)
     /// @param _sender The sender of the transaction
     function _distribute(address[] memory, bytes memory _data, address _sender)
         internal
@@ -172,20 +171,21 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
             distributionStarted = true;
         }
 
-        if (streamDistribution) {
+        if (stream) {
             AddressDriver.StreamReceiver[] memory prevStreamReceivers;
-            DistributionStream[] memory distributionStream;
+            StreamDistribution[] memory streamDistributions;
             int128 amt;
             uint32 hint1;
             uint32 hint2;
             address clawBackAddress;
 
-            // Decode the '_data' to get the distributions
-            (prevStreamReceivers, distributionStream, amt, hint1, hint2, clawBackAddress) = abi.decode(
-                _data, (AddressDriver.StreamReceiver[], DistributionStream[], int128, uint32, uint32, address)
+            // Decode the '_data' to get the streamDistributions
+            (prevStreamReceivers, streamDistributions, amt, duration, hint1, hint2, clawBackAddress) = abi.decode(
+                _data, (AddressDriver.StreamReceiver[], StreamDistribution[], int128, uint32, uint32, uint32, address)
             );
 
-            AddressDriver.StreamReceiver[] memory currentStreamReceivers = _buildStreamReceiver(distributionStream);
+            AddressDriver.StreamReceiver[] memory currentStreamReceivers =
+                _buildStreamReceiver(streamDistributions, duration);
 
             int128 realBalanceDelta = driver.setStreams(
                 address(erc20), prevStreamReceivers, amt, currentStreamReceivers, hint1, hint2, clawBackAddress
@@ -239,7 +239,7 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
         }
     }
 
-    function _buildStreamReceiver(DistributionStream[] memory _distributions)
+    function _buildStreamReceiver(StreamDistribution[] memory _distributions, uint32 _duration)
         internal
         returns (AddressDriver.StreamReceiver[] memory)
     {
@@ -256,14 +256,32 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
             address recipientAddress = _recipients[recipientId].recipientAddress;
 
             if (_validateDistribution(index, recipientId, recipientAddress, amount, merkleProof)) {
+                // Update the pool amount
+                poolAmount -= amount;
+
                 receivers[i].accountId = driver.calcAccountId(recipientAddress);
                 // TODO: use merkleRoot for id instead of 0
-                receivers[i].config = StreamConfigImpl.create(0, drips.minAmtPerSec(), 0, 0);
+                receivers[i].config =
+                    StreamConfigImpl.create(0, calculateFlowRate(uint128(amount), _duration), 0, _duration);
             } else {
                 revert RECIPIENT_ERROR(recipientId);
             }
         }
 
         return receivers;
+    }
+
+    /// @notice Calculate Precision Token Unit flow rate per second
+    /// @dev This function calculates the precision token unit flow rate per second based on the tokens to send
+    ///      and the streaming duration in seconds.
+    /// @param tokensToSend_ The number of tokens to be sent
+    /// @param duration_ The duration of the streaming in seconds
+    /// @return The calculated precision token unit flow rate per second
+    function calculateFlowRate(uint128 tokensToSend_, uint32 duration_) internal returns (uint160) {
+        uint160 flowRate = tokensToSend_ * 10 ** 9 / duration_;
+        if (flowRate < drips.minAmtPerSec()) {
+            return drips.minAmtPerSec();
+        }
+        return flowRate;
     }
 }
