@@ -78,7 +78,7 @@ abstract contract DonationVotingMerkleDistributionBaseStrategy is Native, BaseSt
     struct InitializeData {
         bool useRegistryAnchor;
         bool metadataRequired;
-        bool streamDistribution;
+        bool stream;
         uint64 registrationStartTime;
         uint64 registrationEndTime;
         uint64 allocationStartTime;
