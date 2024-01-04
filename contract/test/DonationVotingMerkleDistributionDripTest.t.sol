@@ -34,6 +34,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
     event FundsDistributed(uint256 amount, address grantee, address indexed token, address indexed recipientId);
     event BatchAllocationSuccessful(address indexed sender);
     event BatchPayoutSuccessful(address indexed sender);
+    event BatchSetStreamSuccessful(address indexed sender, int128 realBalanceDelta);
     event ProfileCreated(
         bytes32 profileId, uint256 nonce, string name, Metadata metadata, address indexed owner, address indexed anchor
     );
@@ -41,7 +42,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
     bool public useRegistryAnchor;
     bool public metadataRequired;
-    bool public streamDistribution;
+    bool public stream;
 
     uint64 public registrationStartTime;
     uint64 public registrationEndTime;
@@ -93,7 +94,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         useRegistryAnchor = true;
         metadataRequired = true;
-        streamDistribution = false;
+        stream = stream;
 
         poolMetadata = Metadata({protocol: 1, pointer: "PoolMetadata"});
 
@@ -102,7 +103,6 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         allowedTokens = new address[](2);
 
         erc20 = new ERC20PresetFixedSupply("test", "test", type(uint256).max, pool_admin());
-
 
         allowedTokens[0] = NATIVE;
         allowedTokens[1] = address(erc20);
@@ -121,7 +121,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -139,7 +139,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         );
 
         vm.stopPrank();
-    }
+    } // ✅
 
     function _deployStrategy() internal virtual returns (address payable) {
         return payable(
@@ -150,12 +150,12 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 )
             )
         );
-    }
+    } // ✅
 
     function test_deployment() public {
         assertEq(address(strategy.getAllo()), address(allo()));
         assertEq(strategy.getStrategyId(), keccak256(abi.encode("DonationVotingMerkleDistributionDrip")));
-    }
+    } // ✅
 
     function test_initialize() public {
         assertEq(strategy.getPoolId(), poolId);
@@ -165,8 +165,9 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         assertEq(strategy.registrationEndTime(), registrationEndTime);
         assertEq(strategy.allocationStartTime(), allocationStartTime);
         assertEq(strategy.allocationEndTime(), allocationEndTime);
+        // TODO: add other initialization predicates
         assertTrue(strategy.allowedTokens(NATIVE));
-    }
+    } // ✅
 
     function testRevert_initialize_withNoAllowedToken() public {
         strategy = new DonationVotingMerkleDistributionDrip(address(allo()), "DonationVotingMerkleDistributionDrip");
@@ -177,7 +178,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -190,7 +191,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
             )
         );
         assertTrue(strategy.allowedTokens(address(0)));
-    }
+    } // ✅
 
     function testRevert_initialize_withNotAllowedToken() public {
         DonationVotingMerkleDistributionDrip testStrategy =
@@ -204,7 +205,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -217,7 +218,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
             )
         );
         assertFalse(testStrategy.allowedTokens(makeAddr("not-allowed-token")));
-    }
+    } // ✅
 
     function test_initialize_UNAUTHORIZED() public {
         vm.expectRevert(UNAUTHORIZED.selector);
@@ -229,7 +230,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -241,7 +242,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 )
             )
         );
-    }
+    } // ✅
 
     function testRevert_initialize_ALREADY_INITIALIZED() public {
         vm.expectRevert(ALREADY_INITIALIZED.selector);
@@ -253,7 +254,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -265,7 +266,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 )
             )
         );
-    }
+    } // ✅
 
     function testRevert_initialize_INVALID() public {
         strategy = new DonationVotingMerkleDistributionDrip(address(allo()), "DonationVotingMerkleDistributionDrip");
@@ -278,7 +279,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     uint64(block.timestamp - 1),
                     registrationEndTime,
                     allocationStartTime,
@@ -300,7 +301,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     uint64(block.timestamp),
                     allocationStartTime,
@@ -322,7 +323,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     uint64(block.timestamp),
@@ -344,7 +345,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -366,7 +367,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     useRegistryAnchor,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -378,7 +379,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 )
             )
         );
-    }
+    } // ✅
 
     // Tests that the correct recipient is returned
     function test_getRecipient() public {
@@ -388,14 +389,14 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         assertEq(recipient.recipientAddress, recipientAddress());
         assertEq(recipient.metadata.protocol, 1);
         assertEq(keccak256(abi.encode(recipient.metadata.pointer)), keccak256(abi.encode("metadata")));
-    }
+    } // ✅
 
     // Tests that the correct recipient status is returned
     function test_getRecipientStatus() public {
         address recipientId = __register_recipient();
         IStrategy.Status recipientStatus = strategy.getRecipientStatus(recipientId);
         assertEq(uint8(recipientStatus), uint8(IStrategy.Status.Pending));
-    }
+    } // ✅
 
     //  Tests that the correct recipient status is returned for an appeal
     function test_register_getRecipientStatus_appeal() public {
@@ -410,13 +411,13 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         IStrategy.Status recipientStatus = strategy.getRecipientStatus(recipientId);
         assertEq(uint8(recipientStatus), uint8(IStrategy.Status.Appealed));
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     // Tests that the pool manager can update the recipient status
     function test_reviewRecipients() public {
         __register_accept_recipient();
         assertEq(strategy.statusesBitMap(0), 2);
-    }
+    } // ✅
 
     // Tests that you can only review recipients when registration is active
     function testRevert_reviewRecipients_REGISTRATION_NOT_ACTIVE() public {
@@ -428,7 +429,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
             new DonationVotingMerkleDistributionBaseStrategy.ApplicationStatus[](1);
         statuses[0] = DonationVotingMerkleDistributionBaseStrategy.ApplicationStatus({index: 0, statusRow: 1});
         strategy.reviewRecipients(statuses);
-    }
+    } // ✅
 
     // Tests that only the pool admin can review recipients
     function testRevert_reviewRecipients_UNAUTHORIZED() public {
@@ -441,7 +442,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         statuses[0] = DonationVotingMerkleDistributionBaseStrategy.ApplicationStatus({index: 0, statusRow: 1});
 
         strategy.reviewRecipients(statuses);
-    }
+    } // ✅
 
     function test_getPayouts() public {
         (bytes32 merkleRoot, DonationVotingMerkleDistributionBaseStrategy.Distribution[] memory distributions) =
@@ -475,7 +476,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         assertEq(summary[0].amount, 1e18);
         assertEq(summary[1].amount, 0);
-    }
+    } // ✅ TODO: to need or not to need
 
     // Tests that the strategy timestamps can be updated and updated correctly
     function test_updatePoolTimestamps() public {
@@ -493,7 +494,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         assertEq(strategy.registrationEndTime(), registrationEndTime);
         assertEq(strategy.allocationStartTime(), allocationStartTime);
         assertEq(strategy.allocationEndTime(), allocationEndTime + 10);
-    }
+    } // ✅ TODO: Implement this on the front end!
 
     function testRevert_updatePoolTimestamps_UNAUTHORIZED() public {
         vm.expectRevert(UNAUTHORIZED.selector);
@@ -501,7 +502,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         strategy.updatePoolTimestamps(
             registrationStartTime, registrationEndTime, allocationStartTime, allocationEndTime + 10
         );
-    }
+    } // ✅
 
     function testRevert_updatePoolTimestamps_INVALID() public {
         vm.expectRevert(INVALID.selector);
@@ -509,7 +510,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         strategy.updatePoolTimestamps(
             uint64(block.timestamp - 1), registrationEndTime, allocationStartTime, allocationEndTime
         );
-    }
+    } // ✅
 
     function testRevert_withdraw_NOT_ALLOWED_30days() public {
         vm.warp(allocationEndTime + 1 days);
@@ -517,7 +518,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.expectRevert(INVALID.selector);
         vm.prank(pool_admin());
         strategy.withdraw(1e18);
-    }
+    } // ✅
 
     function testRevert_withdraw_NOT_ALLOWED_exceed_amount() public {
         vm.warp(block.timestamp + 31 days);
@@ -525,13 +526,13 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.expectRevert(INVALID.selector);
         vm.prank(pool_admin());
         strategy.withdraw(2e18);
-    }
+    } // ✅
 
     function testRevert_withdraw_UNAUTHORIZED() public {
         vm.expectRevert(UNAUTHORIZED.selector);
         vm.prank(randomAddress());
         strategy.withdraw(1e18);
-    }
+    } // ✅
 
     function test_withdraw() public {
         vm.warp(block.timestamp + 31 days);
@@ -542,7 +543,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         strategy.withdraw(1e18);
 
         assertEq(erc20.balanceOf(pool_admin()), balanceBefore + 1e18);
-    }
+    } // ✅
 
     function test_updateDistribution() public {
         vm.warp(allocationEndTime + 1);
@@ -555,7 +556,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         vm.prank(pool_admin());
         strategy.updateDistribution(merkleRoot, metadata);
-    }
+    } // ✅
 
     function testRevert_updateDistribution_INVALID() public {
         test_distribute();
@@ -565,14 +566,14 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.expectRevert(INVALID.selector);
         vm.prank(pool_admin());
         strategy.updateDistribution(merkleRoot, metadata);
-    }
+    } // ✅
 
     function testRevert_updateDistribution_ALLOCATION_NOT_ENDED() public {
         vm.expectRevert(ALLOCATION_NOT_ENDED.selector);
 
         vm.prank(pool_admin());
         strategy.updateDistribution("", Metadata({protocol: 1, pointer: "metadata"}));
-    }
+    } // ✅
 
     function testRevert_updateDistribution_UNAUTHORIZED() public {
         vm.warp(allocationEndTime + 1);
@@ -580,7 +581,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         vm.prank(randomAddress());
         strategy.updateDistribution("", Metadata({protocol: 1, pointer: "metadata"}));
-    }
+    } // ✅
 
     function test_isDistributionSet_True() public {
         vm.warp(allocationEndTime + 1);
@@ -592,31 +593,31 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         strategy.updateDistribution(merkleRoot, metadata);
 
         assertTrue(strategy.isDistributionSet());
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function test_isDistributionSet_False() public {
         assertFalse(strategy.isDistributionSet());
-    }
+    } // ✅
 
     function test_hasBeenDistributed_True() public {
         test_distribute();
         assertTrue(strategy.hasBeenDistributed(0));
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function test_hasBeenDistributed_False() public {
         assertFalse(strategy.hasBeenDistributed(0));
-    }
+    } // ✅
 
     function test_isValidAllocator() public {
         assertTrue(strategy.isValidAllocator(address(0)));
         assertTrue(strategy.isValidAllocator(makeAddr("random")));
-    }
+    } // ✅
 
     function test_isPoolActive() public {
         assertFalse(strategy.isPoolActive());
         vm.warp(registrationStartTime + 1);
         assertTrue(strategy.isPoolActive());
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function test_registerRecipient_new_withRegistryAnchor() public {
         DonationVotingMerkleDistributionBaseStrategy _strategy =
@@ -628,7 +629,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     false,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -653,7 +654,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         DonationVotingMerkleDistributionBaseStrategy.Status status = _strategy.getRecipientStatus(recipientId);
         assertEq(uint8(IStrategy.Status.Pending), uint8(status));
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function testRevert_registerRecipient_new_withRegistryAnchor_UNAUTHORIZED() public {
         DonationVotingMerkleDistributionBaseStrategy _strategy =
@@ -665,7 +666,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
                 DonationVotingMerkleDistributionBaseStrategy.InitializeData(
                     false,
                     metadataRequired,
-                    streamDistribution,
+                    stream,
                     registrationStartTime,
                     registrationEndTime,
                     allocationStartTime,
@@ -685,7 +686,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.expectRevert(UNAUTHORIZED.selector);
         vm.prank(address(allo()));
         _strategy.registerRecipient(data, profile2_member1());
-    }
+    } // ✅
 
     function testRevert_registerRecipient_UNAUTHORIZED() public {
         vm.warp(registrationStartTime + 10);
@@ -695,7 +696,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.prank(address(allo()));
         bytes memory data = __generateRecipientWithId(profile1_anchor());
         strategy.registerRecipient(data, profile2_member1());
-    }
+    } // ✅
 
     function testRevert_registerRecipient_REGISTRATION_NOT_ACTIVE() public {
         vm.expectRevert(REGISTRATION_NOT_ACTIVE.selector);
@@ -703,7 +704,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.prank(address(allo()));
         bytes memory data = __generateRecipientWithId(profile1_anchor());
         strategy.registerRecipient(data, profile1_member1());
-    }
+    } // ✅
 
     function testRevert_registerRecipient_RECIPIENT_ERROR() public {
         Metadata memory metadata = Metadata({protocol: 1, pointer: "metadata"});
@@ -715,7 +716,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         bytes memory data = abi.encode(profile1_anchor(), address(0), metadata);
         strategy.registerRecipient(data, profile1_member1());
-    }
+    } // ✅
 
     function testRevert_registerRecipient_INVALID_METADATA() public {
         Metadata memory metadata = Metadata({protocol: 0, pointer: "metadata"});
@@ -727,11 +728,11 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         bytes memory data = abi.encode(profile1_anchor(), recipientAddress(), metadata);
         strategy.registerRecipient(data, profile1_member1());
-    }
+    } // ✅
 
     function test_allocate() public virtual {
         __register_accept_recipient_allocate();
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function testRevert_allocate_ALLOCATION_NOT_ACTIVE() public {
         vm.expectRevert(ALLOCATION_NOT_ACTIVE.selector);
@@ -746,7 +747,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         vm.prank(pool_admin());
         allo().allocate(poolId, abi.encode(allocations));
-    }
+    } // ✅ TODO: Implement this on the frontend!
 
     function testRevert_allocate_RECIPIENT_ERROR() public {
         vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, randomAddress()));
@@ -763,7 +764,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.deal(pool_admin(), 1e20);
         vm.prank(pool_admin());
         allo().allocate(poolId, abi.encode(allocations));
-    }
+    } // ✅
 
     function testRevert_allocate_INVALID_invalidToken() public virtual {
         address recipientId = __register_accept_recipient();
@@ -782,7 +783,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         vm.deal(pool_admin(), 1e20);
         vm.prank(pool_admin());
         allo().allocate(poolId, abi.encode(allocations));
-    }
+    } // ✅
 
     // TODO: fix bulk NATIVE allocate
     // function testRevert_allocate_INVALID_amountMismatch() public {
@@ -808,97 +809,167 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         (bytes32 merkleRoot, DonationVotingMerkleDistributionBaseStrategy.Distribution[] memory distributions) =
             __getMerkleRootAndDistributions();
 
+        (, DonationVotingMerkleDistributionDrip.StreamDistribution[] memory streamDistributions) =
+            __getMerkleRootAndStreamDistributions();
+
         __register_accept_recipient();
         __register_recipient2();
 
         vm.warp(allocationEndTime + 1);
 
-        vm.prank(pool_admin());
+        vm.startPrank(pool_admin());
         strategy.updateDistribution(merkleRoot, Metadata(1, "metadata"));
-
-        vm.prank(pool_admin());
         allo().fundPool(poolId, 3e18);
+        vm.stopPrank();
 
-        vm.prank(address(allo()));
-        vm.expectEmit(false, false, false, true);
-        emit FundsDistributed(
-            1e18, 0x7b6d3eB9bb22D0B13a2FAd6D6bDBDc34Ad2c5849, NATIVE, 0xad5FDFa74961f0b6F1745eF0A1Fa0e115caa9641
-        );
+        if (stream) {
+            vm.expectEmit(false, false, false, true);
+            emit BatchSetStreamSuccessful(pool_admin(), 3e18);
 
-        vm.expectEmit(false, false, false, true);
-        emit FundsDistributed(
-            2e18, 0x0c73C6E53042522CDd21Bd8F1C63e14e66869E99, NATIVE, 0x4E0aB029b2128e740fA408a26aC5f314e769469f
-        );
+            vm.prank(address(allo()));
+            strategy.distribute(
+                new address[](0),
+                abi.encode(new AddressDriver.StreamReceiver[](0), streamDistributions, 3e18, 60, 0, 0),
+                pool_admin()
+            );
+        } else {
+            vm.expectEmit(true, false, false, true);
+            emit FundsDistributed(
+                1e18,
+                0x7b6d3eB9bb22D0B13a2FAd6D6bDBDc34Ad2c5849,
+                address(erc20),
+                0xad5FDFa74961f0b6F1745eF0A1Fa0e115caa9641
+            );
 
-        vm.expectEmit(false, false, false, true);
-        emit BatchPayoutSuccessful(pool_admin());
+            vm.expectEmit(true, false, false, true);
+            emit FundsDistributed(
+                2e18,
+                0x0c73C6E53042522CDd21Bd8F1C63e14e66869E99,
+                address(erc20),
+                0x4E0aB029b2128e740fA408a26aC5f314e769469f
+            );
 
-        strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
-    }
+            vm.expectEmit(false, false, false, true);
+            emit BatchPayoutSuccessful(pool_admin());
+
+            vm.prank(address(allo()));
+            strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+        }
+    } // ✅
 
     function testRevert_distribute_twice_to_same_recipient() public {
         (bytes32 merkleRoot, DonationVotingMerkleDistributionBaseStrategy.Distribution[] memory distributions) =
             __getMerkleRootAndDistributions();
 
+        (, DonationVotingMerkleDistributionDrip.StreamDistribution[] memory streamDistributions) =
+            __getMerkleRootAndStreamDistributions();
+
         __register_accept_recipient();
         __register_recipient2();
 
         vm.warp(allocationEndTime + 1);
 
-        vm.prank(pool_admin());
+        vm.startPrank(pool_admin());
         strategy.updateDistribution(merkleRoot, Metadata(1, "metadata"));
-
-        vm.prank(pool_admin());
         allo().fundPool(poolId, 3e18);
+        vm.stopPrank();
 
-        vm.prank(address(allo()));
-        strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+        if (stream) {
+            vm.prank(address(allo()));
+            strategy.distribute(
+                new address[](0),
+                abi.encode(new AddressDriver.StreamReceiver[](0), streamDistributions, 3e18, 60, 0, 0),
+                pool_admin()
+            );
 
-        vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile1_anchor()));
-        vm.prank(address(allo()));
-        strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
-    }
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile2_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(
+                new address[](0),
+                abi.encode(new AddressDriver.StreamReceiver[](0), streamDistributions, 3e18, 60, 0, 0),
+                pool_admin()
+            );
+        } else {
+            vm.prank(address(allo()));
+            strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile1_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+        }
+    } // ✅
 
     function testRevert_distribute_wrongProof() public {
         (bytes32 merkleRoot, DonationVotingMerkleDistributionBaseStrategy.Distribution[] memory distributions) =
             __getMerkleRootAndDistributions();
 
+        (, DonationVotingMerkleDistributionDrip.StreamDistribution[] memory streamDistributions) =
+            __getMerkleRootAndStreamDistributions();
+
         __register_accept_recipient();
         __register_recipient2();
 
         vm.warp(allocationEndTime + 1);
 
-        vm.prank(pool_admin());
+        vm.startPrank(pool_admin());
         strategy.updateDistribution(merkleRoot, Metadata(1, "metadata"));
-
-        vm.prank(pool_admin());
         allo().fundPool(poolId, 3e18);
+        vm.stopPrank();
 
         distributions[0].merkleProof[0] = bytes32(0);
+        streamDistributions[0].merkleProof[0] = bytes32(0);
 
-        vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile1_anchor()));
-        vm.prank(address(allo()));
-        strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
-    }
+        if (stream) {
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile2_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(
+                new address[](0),
+                abi.encode(new AddressDriver.StreamReceiver[](0), streamDistributions, 3e18, 60, 0, 0),
+                pool_admin()
+            );
+        } else {
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile1_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+        }
+    } // ✅
 
     function testRevert_distribute_RECIPIENT_ERROR() public {
         (bytes32 merkleRoot, DonationVotingMerkleDistributionBaseStrategy.Distribution[] memory distributions) =
             __getMerkleRootAndDistributions();
 
+        (, DonationVotingMerkleDistributionDrip.StreamDistribution[] memory streamDistributions) =
+            __getMerkleRootAndStreamDistributions();
+
         __register_accept_recipient();
 
         vm.warp(allocationEndTime + 1);
 
-        vm.prank(pool_admin());
+        vm.startPrank(pool_admin());
         strategy.updateDistribution(merkleRoot, Metadata(1, "metadata"));
-
-        vm.prank(pool_admin());
         allo().fundPool(poolId, 3e18);
+        vm.stopPrank();
 
-        vm.prank(address(allo()));
-        vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile2_anchor()));
-        strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
-    }
+        if (stream) {
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile2_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(
+                new address[](0),
+                abi.encode(new AddressDriver.StreamReceiver[](0), streamDistributions, 3e18, 60, 0, 0),
+                pool_admin()
+            );
+        } else {
+            vm.expectRevert(abi.encodeWithSelector(RECIPIENT_ERROR.selector, profile2_anchor()));
+
+            vm.prank(address(allo()));
+            strategy.distribute(new address[](0), abi.encode(distributions), pool_admin());
+        }
+    } // ✅
 
     /// ====================
     /// ===== Helpers ======
@@ -1030,6 +1101,65 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
         bytes32 merkleRoot = 0xbd6f4408f5de99e3401b90770fc87cc4e23b76c093f812d61df2bce4b881d88c;
 
         return (merkleRoot, distributions);
+
+        //        distributions [
+        //   [
+        //     0,
+        //     '0xad5FDFa74961f0b6F1745eF0A1Fa0e115caa9641',
+        //     '0x7b6d3eB9bb22D0B13a2FAd6D6bDBDc34Ad2c5849',
+        //     BigNumber { value: "1000000000000000000" }
+        //   ],
+        //   [
+        //     1,
+        //     '0x4E0aB029b2128e740fA408a26aC5f314e769469f',
+        //     '0x0c73C6E53042522CDd21Bd8F1C63e14e66869E99',
+        //     BigNumber { value: "2000000000000000000" }
+        //   ]
+        // ]
+        // tree.root 0xbd6f4408f5de99e3401b90770fc87cc4e23b76c093f812d61df2bce4b881d88c
+        // proof0.root [
+        //   '0x84de05a8497b125afa0c428b43e98c4378eb0f8eadae82538ee2b53e44bea806'
+        // ]
+        // proof1.root [
+        //   '0x4a3e9be6ab6503dfc6dd903fddcbabf55baef0c6aaca9f2cce2dc6d6350303f5'
+        // ]
+    }
+
+    function __getMerkleRootAndStreamDistributions()
+        internal
+        pure
+        returns (bytes32, DonationVotingMerkleDistributionDrip.StreamDistribution[] memory)
+    {
+        DonationVotingMerkleDistributionDrip.StreamDistribution[] memory streamDistributions =
+            new DonationVotingMerkleDistributionDrip.StreamDistribution[](2);
+
+        DonationVotingMerkleDistributionDrip.StreamDistribution memory streamDistribution0 =
+        DonationVotingMerkleDistributionDrip.StreamDistribution({
+            index: 0,
+            recipientId: 0xad5FDFa74961f0b6F1745eF0A1Fa0e115caa9641,
+            // recipientAddress: '0x7b6d3eB9bb22D0B13a2FAd6D6bDBDc34Ad2c5849',
+            amount: 1e18,
+            merkleProof: new bytes32[](1)
+        });
+        streamDistribution0.merkleProof[0] = 0x84de05a8497b125afa0c428b43e98c4378eb0f8eadae82538ee2b53e44bea806;
+
+        DonationVotingMerkleDistributionDrip.StreamDistribution memory streamDistribution1 =
+        DonationVotingMerkleDistributionDrip.StreamDistribution({
+            index: 1,
+            recipientId: 0x4E0aB029b2128e740fA408a26aC5f314e769469f,
+            // recipientAddress: '0x0c73C6E53042522CDd21Bd8F1C63e14e66869E99',
+            amount: 2e18,
+            merkleProof: new bytes32[](1)
+        });
+        streamDistribution1.merkleProof[0] = 0x4a3e9be6ab6503dfc6dd903fddcbabf55baef0c6aaca9f2cce2dc6d6350303f5;
+
+        // switched positions so that Streams receivers can be sorted
+        streamDistributions[0] = streamDistribution1;
+        streamDistributions[1] = streamDistribution0;
+
+        bytes32 merkleRoot = 0xbd6f4408f5de99e3401b90770fc87cc4e23b76c093f812d61df2bce4b881d88c;
+
+        return (merkleRoot, streamDistributions);
 
         //        distributions [
         //   [
