@@ -6,11 +6,11 @@ interface ProjectWithId extends Project {
 }
 
 export interface SelectProjectProps {
-  docFundId: number;
+  ecoFundId: number;
   project: ProjectWithId;
   updateValues: Dispatch<Partial<{ showPersonalProjects: boolean }>>;
-  addProjectToDocFund: (
-    docFundId: number,
+  addProjectToEcoFund: (
+    ecoFundId: number,
     projectId: number,
     callback: () => void
   ) => Promise<void>;
@@ -18,8 +18,8 @@ export interface SelectProjectProps {
 
 const SelectProject = ({ props }: { props: SelectProjectProps }) => {
   function handleClick() {
-    props.addProjectToDocFund(props.docFundId, props.project.projectId, () => {
-      alert("Project successfully added to DocFund");
+    props.addProjectToEcoFund(props.ecoFundId, props.project.projectId, () => {
+      alert("Project successfully added to ecoFund");
     });
 
     props.updateValues({

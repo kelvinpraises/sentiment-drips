@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import AllocateSection from "@/library/components/molecules/AllocateSection";
 import ShowcaseSection from "@/library/components/molecules/ShowcaseSection";
 import VoteSection from "@/library/components/molecules/VoteSection";
-import { getDocFundById } from "@/library/backendAPI";
+import { getEcoFundById } from "@/library/backendAPI";
 
 const page = () => {
   const pathname = usePathname();
@@ -23,7 +23,7 @@ const page = () => {
 
   useEffect(() => {
     (async () => {
-      const data = await getDocFundById(id);
+      const data = await getEcoFundById(id);
 
       if (data) {
         setData({
@@ -42,7 +42,7 @@ const page = () => {
     <div className="flex-1 bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]">
       <div className="flex gap-4 items-center">
         <p className="text-[40px] font-semibold">{data?.title}</p>
-        <p className="text-sm font-semibold">DocFund</p>
+        <p className="text-sm font-semibold">EcoFund</p>
       </div>
       <div className="flex gap-4 flex-col">
         <div className="flex items-center gap-4">
@@ -84,11 +84,11 @@ const page = () => {
           {(() => {
             switch (activeScreen) {
               case "showcase":
-                return <ShowcaseSection docFundId={id} />;
+                return <ShowcaseSection ecoFundId={id} />;
               case "allocate":
-                return <AllocateSection docFundId={id} />;
+                return <AllocateSection ecoFundId={id} />;
               case "vote":
-                return <VoteSection docFundId={id} />;
+                return <VoteSection ecoFundId={id} />;
               default:
                 return null;
             }

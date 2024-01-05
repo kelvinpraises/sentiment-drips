@@ -4,13 +4,13 @@ import { useEffect, useReducer } from "react";
 import {
   allocateFunds,
   getAllocators,
-  getDocFundProjects,
+  getEcoFundProjects,
 } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 import AllocationCard from "./AllocationCard";
 
-interface DocFundProjects {
+interface ecoFundProjects {
   projectId: number;
   createdBy: string;
   tokensRequested: number;
@@ -36,29 +36,29 @@ interface Allocation {
   }[];
 }
 
-const AllocateSection = ({ docFundId }: { docFundId: any }) => {
+const AllocateSection = ({ ecoFundId }: { ecoFundId: any }) => {
   // TODO: take into consideration the previous allocations made by user, basically when user edits their prev choice
   useEffect(() => {
     (async () => {
-      const allocators = await getAllocators(docFundId);
-      const docFundProjects: DocFundProjects[] = await getDocFundProjects(
-        docFundId
+      const allocators = await getAllocators(ecoFundId);
+      const ecoFundProjects: ecoFundProjects[] = await getEcoFundProjects(
+        ecoFundId
       );
 
       console.log(allocators);
 
-      const personalAllocations = docFundProjects.map((docFund) => {
+      const personalAllocations = ecoFundProjects.map((ecoFund) => {
         return {
-          projectId: docFund.projectId,
+          projectId: ecoFund.projectId,
           amount: 0,
-          title: docFund.title,
-          createdBy: docFund.createdBy,
+          title: ecoFund.title,
+          createdBy: ecoFund.createdBy,
         };
       });
 
       updateValues({ allocators, personalAllocations });
     })();
-  }, [docFundId]);
+  }, [ecoFundId]);
 
   const [values, updateValues] = useReducer(
     (
@@ -97,7 +97,7 @@ const AllocateSection = ({ docFundId }: { docFundId: any }) => {
         <p className="font-bold text-xl">Allocators</p>
         {values.showAllocateSentiment && (
           <AllocationCard
-            docFundId={docFundId}
+            ecoFundId={ecoFundId}
             name={userName}
             address={userAddress}
             open
@@ -109,7 +109,7 @@ const AllocateSection = ({ docFundId }: { docFundId: any }) => {
         {values.allocators.map(({ name, address, allocated }) => {
           return (
             <AllocationCard
-              docFundId={docFundId}
+              ecoFundId={ecoFundId}
               name={name}
               address={address}
               allocated={allocated}

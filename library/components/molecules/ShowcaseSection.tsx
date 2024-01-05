@@ -3,8 +3,8 @@ import { useEffect, useReducer } from "react";
 
 import {
   Project,
-  addProjectToDocFund,
-  getDocFundProjects,
+  addProjectToEcoFund,
+  getEcoFundProjects,
   getProjects,
 } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
@@ -16,7 +16,7 @@ interface ProjectWithId extends Project {
   projectId: number;
 }
 
-interface DocFundProjects {
+interface ecoFundProjects {
   projectId: number;
   createdBy: string;
   tokensRequested: number;
@@ -26,23 +26,23 @@ interface DocFundProjects {
 }
 
 interface ShowcaseSectionState {
-  docFundProjects: DocFundProjects[];
+  ecoFundProjects: ecoFundProjects[];
   showPersonalProjects: boolean;
   projectId: number | undefined;
   personalProjects: ProjectWithId[];
 }
 
-const ShowcaseSection = ({ docFundId }: { docFundId: any }) => {
+const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
   const userAddress = useStore((state) => state.userAddress);
 
   useEffect(() => {
     (async () => {
-      const docFundProjects = await getDocFundProjects(docFundId);
+      const ecoFundProjects = await getEcoFundProjects(ecoFundId);
       const personalProjects = await getProjects(userAddress);
 
-      console.log(docFundProjects);
+      console.log(ecoFundProjects);
 
-      updateValues({ docFundProjects, personalProjects });
+      updateValues({ ecoFundProjects, personalProjects });
     })();
   }, []);
 
@@ -57,7 +57,7 @@ const ShowcaseSection = ({ docFundId }: { docFundId: any }) => {
       };
     },
     {
-      docFundProjects: [],
+      ecoFundProjects: [],
       showPersonalProjects: false,
       projectId: undefined,
       personalProjects: [],
@@ -87,10 +87,10 @@ const ShowcaseSection = ({ docFundId }: { docFundId: any }) => {
             return (
               <SelectProject
                 props={{
-                  addProjectToDocFund,
+                  addProjectToEcoFund,
                   updateValues,
                   project,
-                  docFundId,
+                  ecoFundId,
                 }}
               />
             );
@@ -98,7 +98,7 @@ const ShowcaseSection = ({ docFundId }: { docFundId: any }) => {
         </div>
 
         <div className="w-[520px] flex flex-col gap-4">
-          {values.docFundProjects?.map((x) => {
+          {values.ecoFundProjects?.map((x) => {
             return (
               <LargeCard
                 title={x.title}

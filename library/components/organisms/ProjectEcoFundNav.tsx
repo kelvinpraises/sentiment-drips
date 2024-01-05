@@ -1,5 +1,5 @@
 "use client";
-import { getDocFunds, getProjects } from "@/library/backendAPI";
+import { getEcoFunds, getProjects } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
 import { useEffect, useReducer, useState } from "react";
 import ConnectWallet from "../molecules/ConnectWallet";
@@ -11,9 +11,9 @@ interface GrantCarouselState {
     projectId: number;
     emoji: string;
   }[];
-  docFunds: {
+  ecoFunds: {
     title: string;
-    docFundId: number;
+    ecoFundId: number;
     emoji: string;
   }[];
 }
@@ -25,14 +25,14 @@ const ProjectEcoFundNav = () => {
   useEffect(() => {
     (async () => {
       const projects = await getProjects(userAddress);
-      const docFunds = await getDocFunds(userAddress);
+      const ecoFunds = await getEcoFunds(userAddress);
 
       console.log({
         projects,
-        docFunds,
+        ecoFunds,
       });
 
-      updateValues({ projects, docFunds });
+      updateValues({ projects, ecoFunds });
     })();
   }, []);
 
@@ -48,7 +48,7 @@ const ProjectEcoFundNav = () => {
     },
     {
       projects: [],
-      docFunds: [],
+      ecoFunds: [],
     }
   );
 
@@ -90,11 +90,11 @@ const ProjectEcoFundNav = () => {
             </>
           ) : (
             <>
-              {values.docFunds.map((item, index) => (
+              {values.ecoFunds.map((item, index) => (
                 <GrantCard
                   key={index}
                   title={item.title}
-                  href={`/grants/ecofunds/${item.docFundId}`}
+                  href={`/grants/ecofunds/${item.ecoFundId}`}
                   emoji={item.emoji}
                 />
               ))}

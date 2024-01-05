@@ -1,6 +1,6 @@
 import Button from "../atoms/Button";
 
-const VoteSection = ({ docFundId }: { docFundId: any }) => (
+const VoteSection = ({ ecoFundId }: { ecoFundId: any }) => (
   <div className="flex flex-col gap-4">
     <div className=" flex justify-between">
       <p className=" text-sm">Vote for what counts for the ecosystem</p>

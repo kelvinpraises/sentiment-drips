@@ -24,7 +24,7 @@ const page = () => {
       <TextHead
         title={data?.title}
         description={data?.description}
-        tag={"DocFund Project"}
+        tag={"EcoFund Project"}
       />
       <div className=" flex flex-col gap-8">
         <p className=" font-bold text-xl">Funds Applied</p>

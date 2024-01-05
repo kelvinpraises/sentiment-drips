@@ -7,12 +7,12 @@ import { Allocation } from "@/library/backendAPI";
 import { AllocateSectionState } from "./AllocateSection";
 
 interface cardProps {
-  docFundId: string;
+  ecoFundId: string;
   updateValues?: Dispatch<Partial<AllocateSectionState>>;
   name: string;
   address: string;
   allocateFunds?: (
-    docFundId: string,
+    ecoFundId: string,
     allocations: Allocation[],
     callback: () => void
   ) => Promise<void>;
@@ -87,7 +87,7 @@ const AllocationCard = (card: cardProps) => {
           {!card.readonly && (
             <button
               onClick={() =>
-                card.allocateFunds!(card.docFundId, card.allocated, () =>
+                card.allocateFunds!(card.ecoFundId, card.allocated, () =>
                   router.refresh()
                 )
               }

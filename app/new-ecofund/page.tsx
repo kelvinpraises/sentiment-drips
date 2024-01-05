@@ -6,9 +6,9 @@ import Button from "@/library/components/atoms/Button";
 import Input from "@/library/components/atoms/Input";
 import TextHead from "@/library/components/molecules/TextHead";
 import EmojiPicker from "@/library/components/organisms/EmojiPicker";
-import { createDocFund } from "@/library/backendAPI";
+import { createEcoFund } from "@/library/backendAPI";
 
-export interface NewDocFund {
+export interface NewEcoFund {
   emoji: string;
   title: string;
   tokenAmount: number;
@@ -23,7 +23,7 @@ const NewEcoFundScreen = () => {
 
   // TODO: Ensure the dates passed should be a time in the future.
   const [values, updateValues] = useReducer(
-    (current: NewDocFund, update: Partial<NewDocFund>): NewDocFund => {
+    (current: NewEcoFund, update: Partial<NewEcoFund>): NewEcoFund => {
       return {
         ...current,
         ...update,
@@ -137,8 +137,8 @@ const NewEcoFundScreen = () => {
       <Button
         text={"Submit"}
         handleClick={() =>
-          createDocFund(values, (d: string) => {
-            router.push("/grants/docfunds/" + d);
+          createEcoFund(values, (d: string) => {
+            router.push("/grants/ecoFunds/" + d);
           })
         }
       />

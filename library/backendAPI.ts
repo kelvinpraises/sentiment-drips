@@ -42,9 +42,9 @@ export const createUser = async (user: User, callback: () => void) => {
   }
 };
 
-export const getEcoFunds = async (userId: string) => {
+export const getEcoFunds = async (userId?: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds?userId=${userId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds?userId=${userId}`,
     {
       credentials: "include",
     }
@@ -65,7 +65,7 @@ export const getProjects = async (userId: string) => {
 
 export const createProject = async (
   project: Project,
-  callback: (docFundId: string) => void
+  callback: (ecoFundId: string) => void
 ) => {
   const res = await fetch(`${BACKEND_ADDR}/grants/ecosystem-projects`, {
     method: "POST",
@@ -100,9 +100,9 @@ export const getProjectById = async (projectId: string) => {
   }
 };
 
-export const getDocFundById = async (docFundId: string) => {
+export const getEcoFundById = async (ecoFundId: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds/${docFundId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds/${ecoFundId}`,
     {
       credentials: "include",
     }
@@ -111,39 +111,39 @@ export const getDocFundById = async (docFundId: string) => {
   if (res.ok) {
     return await res.json();
   } else if (res.status === 404) {
-    throw new Error("DocFund not found");
+    throw new Error("ecoFund not found");
   } else {
-    throw new Error("Error fetching DocFund");
+    throw new Error("Error fetching ecoFund");
   }
 };
 
-export const createDocFund = async (
-  docFund: EcoFund,
-  callback: (docFundId: string) => void
+export const createEcoFund = async (
+  ecoFund: EcoFund,
+  callback: (ecoFundId: string) => void
 ) => {
-  const res = await fetch(`${BACKEND_ADDR}/grants/ecosystem-doc-funds`, {
+  const res = await fetch(`${BACKEND_ADDR}/grants/ecosystem-eco-funds`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(docFund),
+    body: JSON.stringify(ecoFund),
     credentials: "include",
   });
 
-  const docFundId = (await res.json()).docFundId;
+  const ecoFundId = (await res.json()).ecoFundId;
 
-  if (docFundId) {
-    callback(docFundId);
+  if (ecoFundId) {
+    callback(ecoFundId);
   }
 };
 
-export const addProjectToDocFund = async (
-  docFundId: number,
+export const addProjectToEcoFund = async (
+  ecoFundId: number,
   projectId: number,
   callback: () => void
 ) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds/showcase/${docFundId}/${projectId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds/showcase/${ecoFundId}/${projectId}`,
     {
       method: "POST",
       credentials: "include",
@@ -155,9 +155,9 @@ export const addProjectToDocFund = async (
   }
 };
 
-export const getDocFundProjects = async (docFundId: string) => {
+export const getEcoFundProjects = async (ecoFundId: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds/projects/${docFundId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds/projects/${ecoFundId}`,
     {
       credentials: "include",
     }
@@ -167,12 +167,12 @@ export const getDocFundProjects = async (docFundId: string) => {
 };
 
 export const allocateFunds = async (
-  docFundId: string,
+  ecoFundId: string,
   allocations: Allocation[],
   callback: () => void
 ) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds/allocate/${docFundId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds/allocate/${ecoFundId}`,
     {
       method: "PUT",
       headers: {
@@ -188,9 +188,9 @@ export const allocateFunds = async (
   }
 };
 
-export const getAllocators = async (docFundId: string) => {
+export const getAllocators = async (ecoFundId: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/grants/ecosystem-doc-funds/allocators/${docFundId}`,
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds/allocators/${ecoFundId}`,
     {
       credentials: "include",
     }
