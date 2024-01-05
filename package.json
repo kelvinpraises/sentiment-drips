@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -r @swc-node/register index.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.0.7",
+    "@swc-node/register": "^1.6.8",
     "cheerio": "^1.0.0-rc.12",
     "chokidar": "^3.5.3",
+    "cors": "^2.8.5",
     "emoji-picker-react": "^4.5.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -21,9 +23,12 @@
     "react-dom": "^18",
     "siwe": "^2.1.4",
     "sqlite": "^5.0.1",
+    "sqlite3": "^5.1.7-rc.0",
     "zustand": "^4.4.3"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.17.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
