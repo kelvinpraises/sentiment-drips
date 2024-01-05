@@ -5,7 +5,7 @@ import { useEffect, useReducer, useState } from "react";
 import ConnectWallet from "../molecules/ConnectWallet";
 import GrantCard from "../molecules/GrantCard";
 
-interface GrantCarouselState {
+interface SideNavState {
   projects: {
     title: string;
     projectId: number;
@@ -18,7 +18,7 @@ interface GrantCarouselState {
   }[];
 }
 
-const ProjectEcoFundNav = () => {
+const SideNav = () => {
   const appActive = useStore((store) => store.appActive);
   const userAddress = useStore((state) => state.userAddress);
 
@@ -37,10 +37,7 @@ const ProjectEcoFundNav = () => {
   }, []);
 
   const [values, updateValues] = useReducer(
-    (
-      current: GrantCarouselState,
-      update: Partial<GrantCarouselState>
-    ): GrantCarouselState => {
+    (current: SideNavState, update: Partial<SideNavState>): SideNavState => {
       return {
         ...current,
         ...update,
@@ -110,4 +107,4 @@ const ProjectEcoFundNav = () => {
   );
 };
 
-export default ProjectEcoFundNav;
+export default SideNav;
