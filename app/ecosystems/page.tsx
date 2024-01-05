@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import LargeCard from "@/components/molecules/LargeCard";
-import TextHead from "@/components/molecules/TextHead";
+import LargeCard from "@/library/components/molecules/LargeCard";
+import TextHead from "@/library/components/molecules/TextHead";
 import { EcoFund, getEcoFunds } from "@/library/backendAPI";
 
 interface EcoFundWithId extends EcoFund {

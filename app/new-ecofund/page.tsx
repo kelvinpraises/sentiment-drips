@@ -2,10 +2,10 @@
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import TextHead from "@/components/molecules/TextHead";
-import EmojiPicker from "@/components/organisms/EmojiPicker";
+import Button from "@/library/components/atoms/Button";
+import Input from "@/library/components/atoms/Input";
+import TextHead from "@/library/components/molecules/TextHead";
+import EmojiPicker from "@/library/components/organisms/EmojiPicker";
 import { createDocFund } from "@/library/backendAPI";
 
 export interface NewDocFund {

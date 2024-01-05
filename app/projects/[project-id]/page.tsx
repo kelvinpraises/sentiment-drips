@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import TextHead from "@/components/molecules/TextHead";
+import TextHead from "@/library/components/molecules/TextHead";
 import { Project, getProjectById } from "@/library/backendAPI";
 
 const page = () => {

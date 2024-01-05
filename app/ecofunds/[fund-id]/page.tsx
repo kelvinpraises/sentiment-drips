@@ -2,9 +2,9 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import AllocateSection from "@/components/molecules/AllocateSection";
-import ShowcaseSection from "@/components/molecules/ShowcaseSection";
-import VoteSection from "@/components/molecules/VoteSection";
+import AllocateSection from "@/library/components/molecules/AllocateSection";
+import ShowcaseSection from "@/library/components/molecules/ShowcaseSection";
+import VoteSection from "@/library/components/molecules/VoteSection";
 import { getDocFundById } from "@/library/backendAPI";
 
 const page = () => {
