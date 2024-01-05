@@ -1,9 +1,10 @@
 "use client";
-import { getEcoFunds, getProjects } from "@/library/backendAPI";
-import { useStore } from "@/library/store/useStore";
 import { useEffect, useReducer, useState } from "react";
+
+import { getEcosystems, getProjects } from "@/library/backendAPI";
+import { useStore } from "@/library/store/useStore";
 import ConnectWallet from "../molecules/ConnectWallet";
-import GrantCard from "../molecules/GrantCard";
+import NavCard from "../molecules/NavCard";
 
 interface SideNavState {
   projects: {
@@ -11,10 +12,10 @@ interface SideNavState {
     projectId: number;
     emoji: string;
   }[];
-  ecoFunds: {
+  ecosystems: {
     title: string;
-    ecoFundId: number;
-    emoji: string;
+    ecosystemId: number;
+    logo: string;
   }[];
 }
 
@@ -25,14 +26,14 @@ const SideNav = () => {
   useEffect(() => {
     (async () => {
       const projects = await getProjects(userAddress);
-      const ecoFunds = await getEcoFunds(userAddress);
+      const ecosystems = await getEcosystems(userAddress);
 
       console.log({
         projects,
-        ecoFunds,
+        ecosystems,
       });
 
-      updateValues({ projects, ecoFunds });
+      updateValues({ projects, ecosystems });
     })();
   }, []);
 
@@ -45,54 +46,54 @@ const SideNav = () => {
     },
     {
       projects: [],
-      ecoFunds: [],
+      ecosystems: [],
     }
   );
 
-  const [activeButton, setActiveButton] = useState("projects");
+  const [activeSelection, setActiveSelection] = useState("projects");
   return (
     <div className=" max-w-[420px] w-full flex flex-col  bg-white rounded-[10px] h-full">
       <div className=" flex  items-center">
         <button
           className={` px-8 grid place-items-center text-xl font-medium flex-1 h-[70px] ${
-            activeButton == "projects" &&
+            activeSelection == "projects" &&
             " bg-[#DEE6E5] text-[#647684] rounded-tl-[10px]"
           }`}
-          onClick={() => setActiveButton("projects")}
+          onClick={() => setActiveSelection("projects")}
         >
           Projects
         </button>
         <button
           className={` px-8 grid place-items-center text-xl font-medium flex-1 h-[70px] ${
-            activeButton == "ecofunds" &&
+            activeSelection == "ecosystems" &&
             " bg-[#DEE6E5] text-[#647684] rounded-tr-[10px]"
           }`}
-          onClick={() => setActiveButton("ecofunds")}
+          onClick={() => setActiveSelection("ecosystems")}
         >
-          EocFunds
+          Ecosystems
         </button>
       </div>
       {appActive ? (
         <div className="flex flex-col gap-8 p-8 overflow-y-scroll">
-          {activeButton == "projects" ? (
+          {activeSelection == "projects" ? (
             <>
               {values.projects.map((item, index) => (
-                <GrantCard
+                <NavCard
                   key={index}
                   title={item.title}
-                  href={`/grants/projects/${item.projectId}`}
+                  href={`/projects/${item.projectId}`}
                   emoji={item.emoji}
                 />
               ))}
             </>
           ) : (
             <>
-              {values.ecoFunds.map((item, index) => (
-                <GrantCard
+              {values.ecosystems.map((item, index) => (
+                <NavCard
                   key={index}
                   title={item.title}
-                  href={`/grants/ecofunds/${item.ecoFundId}`}
-                  emoji={item.emoji}
+                  href={`/ecosystems/${item.ecosystemId}`}
+                  logo={item.logo}
                 />
               ))}
             </>
