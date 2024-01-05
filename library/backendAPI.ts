@@ -64,7 +64,7 @@ export const getEcoFunds = async (ecosystemId: string) => {
 
 export const getProjects = async (userId: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/ecosystem-projects?userId=${userId}`,
+    `${BACKEND_ADDR}/projects?userId=${userId}`,
     {
       credentials: "include",
     }
@@ -77,7 +77,7 @@ export const createProject = async (
   project: Project,
   callback: (ecoFundId: string) => void
 ) => {
-  const res = await fetch(`${BACKEND_ADDR}/ecosystem-projects`, {
+  const res = await fetch(`${BACKEND_ADDR}/projects`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -95,7 +95,7 @@ export const createProject = async (
 
 export const getProjectById = async (projectId: string) => {
   const res = await fetch(
-    `${BACKEND_ADDR}/ecosystem-projects/${projectId}`,
+    `${BACKEND_ADDR}/projects/${projectId}`,
     {
       credentials: "include",
     }
