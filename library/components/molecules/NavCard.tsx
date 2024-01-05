@@ -16,7 +16,7 @@ interface IImageCard {
 
 type ICard = IEmojiCard | IImageCard;
 
-const GrantCard = (card: ICard) => {
+const NavCard = (card: ICard) => {
   return (
     <Link href={card.href}>
       <div className=" p-4 gap-4 flex flex-col items-center bg-[#DEE6E5] rounded-[10px]">
@@ -34,4 +34,4 @@ const GrantCard = (card: ICard) => {
   );
 };
 
-export default GrantCard;
+export default NavCard;
