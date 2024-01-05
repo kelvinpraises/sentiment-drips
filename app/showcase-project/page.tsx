@@ -82,7 +82,7 @@ const page = () => {
         text={"Submit"}
         handleClick={() =>
           createProject(values, (d: string) => {
-            router.push("/grants/projects/" + d);
+            router.push("/projects/" + d);
           })
         }
       />

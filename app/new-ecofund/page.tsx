@@ -138,7 +138,7 @@ const NewEcoFundScreen = () => {
         text={"Submit"}
         handleClick={() =>
           createEcoFund(values, (d: string) => {
-            router.push("/grants/ecoFunds/" + d);
+            router.push("/ecoFunds/" + d);
           })
         }
       />
