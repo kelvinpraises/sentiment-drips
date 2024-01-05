@@ -1,5 +1,5 @@
-import TextHead from "../components/molecules/TextHead";
-import LargeCard from "../components/molecules/LargeCard";
+import TextHead from "@/lib/components/molecules/TextHead";
+import LargeCard from "@/lib/components/molecules/LargeCard";
 import Link from "next/link";
 
 const data = {
