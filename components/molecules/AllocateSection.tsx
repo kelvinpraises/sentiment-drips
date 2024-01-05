@@ -1,7 +1,12 @@
 "use client";
-import useBackendAPI from "../../lib/hooks/backendAPI";
-import { useStore } from "../../lib/store/useStore";
 import { useEffect, useReducer } from "react";
+
+import {
+  allocateFunds,
+  getAllocators,
+  getDocFundProjects,
+} from "@/lib/backendAPI";
+import { useStore } from "@/lib/store/useStore";
 import Button from "../atoms/Button";
 import AllocationCard from "./AllocationCard";
 
@@ -32,8 +37,6 @@ interface Allocation {
 }
 
 const AllocateSection = ({ docFundId }: { docFundId: any }) => {
-  const { getAllocators, getDocFundProjects, allocateFunds } = useBackendAPI();
-
   // TODO: take into consideration the previous allocations made by user, basically when user edits their prev choice
   useEffect(() => {
     (async () => {

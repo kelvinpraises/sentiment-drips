@@ -1,10 +1,16 @@
-"use client"
-import useBackendAPI, { Project } from "../../lib/hooks/backendAPI";
+"use client";
 import { useEffect, useReducer } from "react";
+
+import {
+  Project,
+  addProjectToDocFund,
+  getDocFundProjects,
+  getProjects,
+} from "@/lib/backendAPI";
+import { useStore } from "@/lib/store/useStore";
 import Button from "../atoms/Button";
 import SelectProject from "../atoms/SelectProject";
 import LargeCard from "./LargeCard";
-import { useStore } from "../../lib/store/useStore";
 
 interface ProjectWithId extends Project {
   projectId: number;
@@ -27,9 +33,6 @@ interface ShowcaseSectionState {
 }
 
 const ShowcaseSection = ({ docFundId }: { docFundId: any }) => {
-  const { getDocFundProjects, addProjectToDocFund, getProjects } =
-    useBackendAPI();
-
   const userAddress = useStore((state) => state.userAddress);
 
   useEffect(() => {

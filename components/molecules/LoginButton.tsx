@@ -1,13 +1,11 @@
 "use client";
-import useBackendAPI from "../../lib/hooks/backendAPI";
-import useSIWE from "../../lib/hooks/siwe";
-import { useStore } from "../../lib/store/useStore";
+import { createUser } from "@/lib/backendAPI";
+import useSIWE from "@/lib/hooks/siwe";
+import { useStore } from "@/lib/store/useStore";
 import Button from "../atoms/Button";
 
 const LoginButton = () => {
   const { connectWallet, disconnectWallet } = useSIWE();
-
-  const { createUser } = useBackendAPI();
 
   const appActive = useStore((store) => store.appActive);
   const setAppActive = useStore((store) => store.setAppActive);

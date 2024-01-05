@@ -1,4 +1,4 @@
-import { Project } from "../../lib/hooks/backendAPI";
+import { Project } from "@/lib/backendAPI";
 import { Dispatch } from "react";
 
 interface ProjectWithId extends Project {

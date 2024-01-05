@@ -2,11 +2,10 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import TextHead from "../../../components/molecules/TextHead";
-import useBackendAPI, { Project } from "../../../lib/hooks/backendAPI";
+import TextHead from "@/components/molecules/TextHead";
+import { Project, getProjectById } from "@/lib/backendAPI";
 
 const page = () => {
-  const { getProjectById } = useBackendAPI();
   const pathname = usePathname();
   const id = pathname.split("/")[3];
 

@@ -3,6 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { EmojiClickData, EmojiStyle } from "emoji-picker-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+
 import Emoji from "../atoms/Emoji";
 
 const _EmojiPicker = dynamic(() => import("emoji-picker-react"), {

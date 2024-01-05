@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import TextHead from "../../components/molecules/TextHead";
-import LargeCard from "../../components/molecules/LargeCard";
-import useBackendAPI, { EcoFund } from "../../lib/hooks/backendAPI";
+import TextHead from "@/components/molecules/TextHead";
+import LargeCard from "@/components/molecules/LargeCard";
+import { EcoFund, getEcoFunds } from "@/lib/backendAPI";
 
 interface EcoFundWithId extends EcoFund {
   ecoFundId: number;
@@ -27,7 +27,6 @@ const initData = {
 };
 
 const page = () => {
-  const { getEcoFunds } = useBackendAPI();
   const [data, setData] = useState(initData);
 
   useEffect(() => {

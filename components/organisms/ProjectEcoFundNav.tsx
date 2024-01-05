@@ -1,5 +1,5 @@
 "use client";
-import useBackendAPI from "../../lib/hooks/backendAPI";
+import { getDocFunds, getProjects } from "../../lib/backendAPI";
 import { useStore } from "../../lib/store/useStore";
 import { useEffect, useReducer, useState } from "react";
 import ConnectWallet from "../molecules/ConnectWallet";
@@ -19,8 +19,6 @@ interface GrantCarouselState {
 }
 
 const ProjectEcoFundNav = () => {
-  const { getDocFunds, getProjects } = useBackendAPI();
-
   const appActive = useStore((store) => store.appActive);
   const userAddress = useStore((state) => state.userAddress);
 

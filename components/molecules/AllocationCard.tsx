@@ -1,8 +1,9 @@
 "use client";
-import { Allocation } from "../../lib/hooks/backendAPI";
 import { produce } from "immer";
 import { useRouter } from "next/navigation";
 import { Dispatch, useState } from "react";
+
+import { Allocation } from "@/lib/backendAPI";
 import { AllocateSectionState } from "./AllocateSection";
 
 interface cardProps {

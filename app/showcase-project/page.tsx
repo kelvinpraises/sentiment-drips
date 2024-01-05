@@ -2,11 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 
-import Button from "../../components/atoms/Button";
-import Input from "../../components/atoms/Input";
-import TextHead from "../../components/molecules/TextHead";
-import EmojiPicker from "../../components/organisms/EmojiPicker";
-import useBackendAPI from "../../lib/hooks/backendAPI";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import TextHead from "@/components/molecules/TextHead";
+import EmojiPicker from "@/components/organisms/EmojiPicker";
+import { createProject } from "@/lib/backendAPI";
 
 interface NewShowcaseProject {
   tokensRequested: number;
@@ -17,7 +17,6 @@ interface NewShowcaseProject {
 
 const page = () => {
   const router = useRouter();
-  const { createProject } = useBackendAPI();
 
   const [values, updateValues] = useReducer(
     (

@@ -2,11 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 
-import Button from "../../components/atoms/Button";
-import Input from "../../components/atoms/Input";
-import TextHead from "../../components/molecules/TextHead";
-import EmojiPicker from "../../components/organisms/EmojiPicker";
-import useBackendAPI from "../../lib/hooks/backendAPI";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import TextHead from "@/components/molecules/TextHead";
+import EmojiPicker from "@/components/organisms/EmojiPicker";
+import { createDocFund } from "@/lib/backendAPI";
 
 export interface NewDocFund {
   emoji: string;
@@ -20,7 +20,6 @@ export interface NewDocFund {
 
 const NewEcoFundScreen = () => {
   const router = useRouter();
-  const { createDocFund } = useBackendAPI();
 
   // TODO: Ensure the dates passed should be a time in the future.
   const [values, updateValues] = useReducer(

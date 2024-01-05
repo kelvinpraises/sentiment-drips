@@ -2,13 +2,12 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import AllocateSection from "../../../components/molecules/AllocateSection";
-import ShowcaseSection from "../../../components/molecules/ShowcaseSection";
-import VoteSection from "../../../components/molecules/VoteSection";
-import useBackendAPI from "../../../lib/hooks/backendAPI";
+import AllocateSection from "@/components/molecules/AllocateSection";
+import ShowcaseSection from "@/components/molecules/ShowcaseSection";
+import VoteSection from "@/components/molecules/VoteSection";
+import { getDocFundById } from "@/lib/backendAPI";
 
 const page = () => {
-  const { getDocFundById } = useBackendAPI();
   const pathname = usePathname();
   const id = pathname.split("/")[3];
 
