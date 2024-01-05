@@ -3,7 +3,7 @@ import { produce } from "immer";
 import { useRouter } from "next/navigation";
 import { Dispatch, useState } from "react";
 
-import { Allocation } from "@/lib/backendAPI";
+import { Allocation } from "@/library/backendAPI";
 import { AllocateSectionState } from "./AllocateSection";
 
 interface cardProps {

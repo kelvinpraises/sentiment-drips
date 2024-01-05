@@ -5,8 +5,8 @@ import {
   allocateFunds,
   getAllocators,
   getDocFundProjects,
-} from "@/lib/backendAPI";
-import { useStore } from "@/lib/store/useStore";
+} from "@/library/backendAPI";
+import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 import AllocationCard from "./AllocationCard";
 

@@ -1,4 +1,4 @@
-import { Project } from "@/lib/backendAPI";
+import { Project } from "@/library/backendAPI";
 import { Dispatch } from "react";
 
 interface ProjectWithId extends Project {

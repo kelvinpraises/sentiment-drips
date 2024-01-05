@@ -1,6 +1,6 @@
 "use client";
-import { getDocFunds, getProjects } from "@/lib/backendAPI";
-import { useStore } from "@/lib/store/useStore";
+import { getDocFunds, getProjects } from "@/library/backendAPI";
+import { useStore } from "@/library/store/useStore";
 import { useEffect, useReducer, useState } from "react";
 import ConnectWallet from "../molecules/ConnectWallet";
 import GrantCard from "../molecules/GrantCard";

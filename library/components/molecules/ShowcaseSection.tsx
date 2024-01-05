@@ -6,8 +6,8 @@ import {
   addProjectToDocFund,
   getDocFundProjects,
   getProjects,
-} from "@/lib/backendAPI";
-import { useStore } from "@/lib/store/useStore";
+} from "@/library/backendAPI";
+import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 import SelectProject from "../atoms/SelectProject";
 import LargeCard from "./LargeCard";

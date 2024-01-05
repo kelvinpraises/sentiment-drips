@@ -1,7 +1,7 @@
 "use client";
-import { createUser } from "@/lib/backendAPI";
-import useSIWE from "@/lib/hooks/siwe";
-import { useStore } from "@/lib/store/useStore";
+import { createUser } from "@/library/backendAPI";
+import useSIWE from "@/library/hooks/siwe";
+import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 
 const LoginButton = () => {

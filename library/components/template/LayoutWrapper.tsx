@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 
 import ProjectEcoFundNav from "../organisms/ProjectEcoFundNav";
-import useSIWE from "@/lib/hooks/siwe";
-import { useStore } from "@/lib/store/useStore";
+import useSIWE from "@/library/hooks/siwe";
+import { useStore } from "@/library/store/useStore";
 import Footer from "../organisms/Footer";
 import Header from "../organisms/Header";
 
