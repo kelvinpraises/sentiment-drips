@@ -1,5 +1,5 @@
-import LayoutWrapper from "@/lib/components/template/LayoutWrapper";
-import "styles/globals.css";
+import LayoutWrapper from "@/library/components/template/LayoutWrapper";
+import "@/library/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 

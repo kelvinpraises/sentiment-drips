@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import TextHead from "@/components/molecules/TextHead";
-import { Project, getProjectById } from "@/lib/backendAPI";
+import { Project, getProjectById } from "@/library/backendAPI";
 
 const page = () => {
   const pathname = usePathname();

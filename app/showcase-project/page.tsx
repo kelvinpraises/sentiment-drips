@@ -6,7 +6,7 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import TextHead from "@/components/molecules/TextHead";
 import EmojiPicker from "@/components/organisms/EmojiPicker";
-import { createProject } from "@/lib/backendAPI";
+import { createProject } from "@/library/backendAPI";
 
 interface NewShowcaseProject {
   tokensRequested: number;

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import TextHead from "@/components/molecules/TextHead";
 import LargeCard from "@/components/molecules/LargeCard";
-import { EcoFund, getEcoFunds } from "@/lib/backendAPI";
+import { EcoFund, getEcoFunds } from "@/library/backendAPI";
 
 interface EcoFundWithId extends EcoFund {
   ecoFundId: number;

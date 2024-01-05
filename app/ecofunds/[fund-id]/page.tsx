@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import AllocateSection from "@/components/molecules/AllocateSection";
 import ShowcaseSection from "@/components/molecules/ShowcaseSection";
 import VoteSection from "@/components/molecules/VoteSection";
-import { getDocFundById } from "@/lib/backendAPI";
+import { getDocFundById } from "@/library/backendAPI";
 
 const page = () => {
   const pathname = usePathname();
