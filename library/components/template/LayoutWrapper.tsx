@@ -30,12 +30,9 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
 
   // Define an array of path patterns
   const pathPatterns = [
-    // /:spaceId/:documentationId/tutorials/:tutorialId
-    /^\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/explanations\/[a-zA-Z0-9_-]+$/,
-    /^\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/explanations\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/,
-    /^\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/reference+$/,
-    /^\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/tutorials\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/,
-    /^\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/guides\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/,
+    // /documentation/:documentationId
+    /^\/documentation+$/,
+    /^\/documentation\/[a-zA-Z0-9_-]+$/,
   ];
 
   // Check if the current pathname matches any of the path patterns
@@ -45,13 +42,9 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
     <html lang="en">
       <body className={inter.className}>
         {isPathMatched ? (
-          <main className=" flex flex-col gap-1 w-screen relative">
-            <Header
-              className={
-                "fixed top-[2px] z-10 w-full border-solid border-b-4 border-b-[#F2F4F8]"
-              }
-            />
-            <div className=" flex px-1 gap-1">{children}</div>
+          <main className=" flex flex-col gap-1 w-screen relative h-screen">
+            <Header />
+            <div className=" flex px-1 gap-1 h-full">{children}</div>
             <Footer className=" pt-8" />
           </main>
         ) : (
