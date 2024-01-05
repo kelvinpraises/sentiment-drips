@@ -75,32 +75,48 @@ const SideNav = () => {
       </div>
       {appActive ? (
         <div className="flex flex-col gap-8 p-8 overflow-y-scroll">
-          {activeSelection == "projects" ? (
+          {activeSelection === "projects" ? (
             <>
-              {values.projects.map((item, index) => (
-                <NavCard
-                  key={index}
-                  title={item.title}
-                  href={`/projects/${item.projectId}`}
-                  emoji={item.emoji}
-                />
-              ))}
+              {values.projects.length > 0 ? (
+                values.projects.map((item, index) => (
+                  <NavCard
+                    key={index}
+                    title={item.title}
+                    href={`/projects/${item.projectId}`}
+                    emoji={item.emoji}
+                  />
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="flex flex-col gap-4 mt-[-5rem]">
+                    <p>No projects available</p>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>
-              {values.ecosystems.map((item, index) => (
-                <NavCard
-                  key={index}
-                  title={item.title}
-                  href={`/ecosystems/${item.ecosystemId}`}
-                  logo={item.logo}
-                />
-              ))}
+              {values.ecosystems.length > 0 ? (
+                values.ecosystems.map((item, index) => (
+                  <NavCard
+                    key={index}
+                    title={item.title}
+                    href={`/ecosystems/${item.ecosystemId}`}
+                    logo={item.logo}
+                  />
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="flex flex-col gap-4 mt-[-5rem]">
+                    <p>No ecosystems available</p>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
       ) : (
-        <div className=" flex-1 grid place-items-center">
+        <div className="flex-1 grid place-items-center">
           <ConnectWallet />
         </div>
       )}
