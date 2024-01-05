@@ -2,7 +2,7 @@
 import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 
-import ProjectEcoFundNav from "../organisms/ProjectEcoFundNav";
+import SideNav from "../organisms/SideNav";
 import useSIWE from "@/library/hooks/siwe";
 import { useStore } from "@/library/store/useStore";
 import Footer from "../organisms/Footer";
@@ -51,7 +51,7 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
           <main className=" flex flex-col gap-8 w-screen h-screen">
             <Header />
             <div className=" flex flex-1 overflow-y-scroll px-8 gap-8">
-              <ProjectEcoFundNav />
+              <SideNav />
               {children}
             </div>
             <Footer />
