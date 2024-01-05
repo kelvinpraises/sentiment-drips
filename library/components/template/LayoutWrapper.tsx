@@ -8,7 +8,7 @@ import { useStore } from "@/library/store/useStore";
 import Footer from "../organisms/Footer";
 import Header from "../organisms/Header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], preload: true });
 
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
