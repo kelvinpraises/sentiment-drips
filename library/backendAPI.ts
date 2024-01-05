@@ -42,9 +42,19 @@ export const createUser = async (user: User, callback: () => void) => {
   }
 };
 
-export const getEcoFunds = async (userId?: string) => {
+export const getEcosystems = async (userId?: string) => {
   const res = await fetch(
     `${BACKEND_ADDR}/grants/ecosystem-eco-funds?userId=${userId}`,
+    {
+      credentials: "include",
+    }
+  );
+  return await res.json();
+};
+
+export const getEcoFunds = async (ecosystemId: string) => {
+  const res = await fetch(
+    `${BACKEND_ADDR}/grants/ecosystem-eco-funds?ecosystemId=${ecosystemId}`,
     {
       credentials: "include",
     }
