@@ -158,7 +158,7 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
     ///      Emits a 'BatchPayoutSuccessful()' event.
     /// @param _data The data to be decoded
     ///  @custom:data if 'stream' is 'true' (AddressDriver.StreamReceiver[] prevStreamReceivers,
-    ///                StreamDistribution[] streamDistributions, int128 amt, uint32 duration, hint1 uint32, hint2 uint332, address clawBackAddress)
+    ///                StreamDistribution[] streamDistributions, int128 amt, uint32 duration, uint32 hint1, uint32 hint2)
     ///  @custom:data if 'stream' is 'false'(Distribution[] distributions)
     /// @param _sender The sender of the transaction
     function _distribute(address[] memory, bytes memory _data, address _sender)
@@ -175,20 +175,20 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
             AddressDriver.StreamReceiver[] memory prevStreamReceivers;
             StreamDistribution[] memory streamDistributions;
             int128 amt;
+            uint32 duration;
             uint32 hint1;
             uint32 hint2;
-            address clawBackAddress;
 
             // Decode the '_data' to get the streamDistributions
-            (prevStreamReceivers, streamDistributions, amt, duration, hint1, hint2, clawBackAddress) = abi.decode(
-                _data, (AddressDriver.StreamReceiver[], StreamDistribution[], int128, uint32, uint32, uint32, address)
+            (prevStreamReceivers, streamDistributions, amt, duration, hint1, hint2) = abi.decode(
+                _data, (AddressDriver.StreamReceiver[], StreamDistribution[], int128, uint32, uint32, uint32)
             );
 
             AddressDriver.StreamReceiver[] memory currentStreamReceivers =
                 _buildStreamReceiver(streamDistributions, duration);
 
             int128 realBalanceDelta = driver.setStreams(
-                address(erc20), prevStreamReceivers, amt, currentStreamReceivers, hint1, hint2, clawBackAddress
+                address(erc20), prevStreamReceivers, amt, currentStreamReceivers, hint1, hint2, address(this)
             );
 
             // Emit that the batch payout was successful
@@ -256,6 +256,9 @@ contract DonationVotingMerkleDistributionDrip is DonationVotingMerkleDistributio
             address recipientAddress = _recipients[recipientId].recipientAddress;
 
             if (_validateDistribution(index, recipientId, recipientAddress, amount, merkleProof)) {
+                // Set the distribution as distributed
+                _setDistributed(index);
+
                 // Update the pool amount
                 poolAmount -= amount;
 
