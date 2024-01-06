@@ -74,7 +74,7 @@ const SideNav = () => {
         </button>
       </div>
       {appActive ? (
-        <div className="flex flex-col gap-8 p-8 overflow-y-scroll">
+        <div className="flex h-full flex-col gap-8 p-8 overflow-y-scroll">
           {activeSelection === "projects" ? (
             <>
               {values.projects.length > 0 ? (
