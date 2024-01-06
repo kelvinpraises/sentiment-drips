@@ -3,6 +3,28 @@ export interface User {
   avatarUrl: string;
 }
 
+export interface Ecosystem {
+  name: string;
+  logoURL: string;
+  description: string;
+  governanceReady: boolean;
+  governanceTokenName: string;
+  governanceTokenSymbol: string;
+  governanceTokenAddress: string;
+  timeLockAddress: string;
+  governorAddress: string;
+  createdAt: number;
+}
+
+export interface EcoFund {
+  ecosystemId: string;
+  emoji: string;
+  title: string;
+  description: string;
+  strategyAddress: string;
+  createdAt: number;
+}
+
 export interface Project {
   tokensRequested: number;
   emoji: string;
@@ -10,14 +32,11 @@ export interface Project {
   description: string;
 }
 
-export interface EcoFund {
-  emoji: string;
-  title: string;
-  tokenAmount: number;
-  description: string;
-  registrationEnd: number;
-  allocationEnd: number;
-  createdAt: number;
+export interface Showcase {
+  ecoFundId: number;
+  projectId: number;
+  recipientId: string;
+  status: number;
 }
 
 export interface Allocation {
