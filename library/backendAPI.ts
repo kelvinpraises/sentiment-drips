@@ -174,17 +174,17 @@ export const getProjects = async (userId: string) => {
 /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
 
 export const showcaseEcoFundProject = async (
-  ecoFundId: number,
-  projectId: number,
+  showcase: Showcase,
   callback: () => void
 ) => {
-  const res = await fetch(
-    `${BACKEND_ADDR}/showcase/${ecoFundId}/${projectId}`,
-    {
-      method: "POST",
-      credentials: "include",
-    }
-  );
+  const res = await fetch(`${BACKEND_ADDR}/showcase/${showcase.ecoFundId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(showcase),
+    credentials: "include",
+  });
 
   if (res.ok) {
     callback();
