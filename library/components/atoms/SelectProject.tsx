@@ -9,7 +9,7 @@ export interface SelectProjectProps {
   ecoFundId: number;
   project: ProjectWithId;
   updateValues: Dispatch<Partial<{ showPersonalProjects: boolean }>>;
-  addProjectToEcoFund: (
+  showcaseEcoFundProject: (
     ecoFundId: number,
     projectId: number,
     callback: () => void
@@ -18,7 +18,7 @@ export interface SelectProjectProps {
 
 const SelectProject = ({ props }: { props: SelectProjectProps }) => {
   function handleClick() {
-    props.addProjectToEcoFund(props.ecoFundId, props.project.projectId, () => {
+    props.showcaseEcoFundProject(props.ecoFundId, props.project.projectId, () => {
       alert("Project successfully added to ecoFund");
     });
 

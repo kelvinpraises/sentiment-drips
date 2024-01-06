@@ -11,7 +11,7 @@ interface cardProps {
   updateValues?: Dispatch<Partial<AllocateSectionState>>;
   name: string;
   address: string;
-  allocateFunds?: (
+  createEcoFundAllocation?: (
     ecoFundId: string,
     allocations: Allocation[],
     callback: () => void
@@ -87,7 +87,7 @@ const AllocationCard = (card: cardProps) => {
           {!card.readonly && (
             <button
               onClick={() =>
-                card.allocateFunds!(card.ecoFundId, card.allocated, () =>
+                card.createEcoFundAllocation!(card.ecoFundId, card.allocated, () =>
                   router.refresh()
                 )
               }

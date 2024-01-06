@@ -3,7 +3,7 @@ import { useEffect, useReducer } from "react";
 
 import {
   Project,
-  addProjectToEcoFund,
+  showcaseEcoFundProject,
   getEcoFundProjects,
   getProjects,
 } from "@/library/backendAPI";
@@ -87,7 +87,7 @@ const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
             return (
               <SelectProject
                 props={{
-                  addProjectToEcoFund,
+                  showcaseEcoFundProject,
                   updateValues,
                   project,
                   ecoFundId,

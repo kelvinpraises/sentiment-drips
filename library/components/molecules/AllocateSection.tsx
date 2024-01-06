@@ -2,8 +2,8 @@
 import { useEffect, useReducer } from "react";
 
 import {
-  allocateFunds,
-  getAllocators,
+  createEcoFundAllocation,
+  getEcoFundAllocations,
   getEcoFundProjects,
 } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
@@ -40,7 +40,7 @@ const AllocateSection = ({ ecoFundId }: { ecoFundId: any }) => {
   // TODO: take into consideration the previous allocations made by user, basically when user edits their prev choice
   useEffect(() => {
     (async () => {
-      const allocators = await getAllocators(ecoFundId);
+      const allocators = await getEcoFundAllocations(ecoFundId);
       const ecoFundProjects: ecoFundProjects[] = await getEcoFundProjects(
         ecoFundId
       );
@@ -103,7 +103,7 @@ const AllocateSection = ({ ecoFundId }: { ecoFundId: any }) => {
             open
             allocated={values.personalAllocations}
             updateValues={updateValues}
-            allocateFunds={allocateFunds}
+            createEcoFundAllocation={createEcoFundAllocation}
           />
         )}
         {values.allocators.map(({ name, address, allocated }) => {
