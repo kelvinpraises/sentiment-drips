@@ -69,11 +69,49 @@ export const createUser = async (user: User, callback: () => void) => {
 /*                    Ecosystem Section                     */
 /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
 
-export const createEcosystem = async () => {};
+export const createEcosystem = async (
+  ecosystem: Ecosystem,
+  callback: (ecosystemId: string) => void
+) => {
+  const res = await fetch(`${BACKEND_ADDR}/ecosystem`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(ecosystem),
+    credentials: "include",
+  });
 
-export const getEcosystemById = async (ecosystemId: string) => {};
+  const ecosystemId = (await res.json()).ecosystemId;
 
-export const getEcosystems = async (userId?: string) => {};
+  if (ecosystemId) {
+    callback(ecosystemId);
+  }
+};
+
+export const getEcosystemById = async (ecosystemId: string) => {
+  const res = await fetch(`${BACKEND_ADDR}/ecosystem/${ecosystemId}`, {
+    credentials: "include",
+  });
+
+  if (res.ok) {
+    return await res.json();
+  } else if (res.status === 404) {
+    throw new Error("ecosystem not found");
+  } else {
+    throw new Error("Error fetching ecosystem");
+  }
+};
+
+export const getEcosystems = async (userId?: string) => {
+  const res = await fetch(
+    `${BACKEND_ADDR}/ecosystem?userId=${userId}`,
+    {
+      credentials: "include",
+    }
+  );
+  return await res.json();
+};
 
 /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
 /*                     EcoFunds Section                     */
