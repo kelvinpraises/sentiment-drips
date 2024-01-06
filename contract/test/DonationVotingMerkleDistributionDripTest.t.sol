@@ -94,7 +94,7 @@ contract DonationVotingMerkleDistributionDripTest is Test, AlloSetup, RegistrySe
 
         useRegistryAnchor = true;
         metadataRequired = true;
-        stream = stream;
+        stream = true;
 
         poolMetadata = Metadata({protocol: 1, pointer: "PoolMetadata"});
 
