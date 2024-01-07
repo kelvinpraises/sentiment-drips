@@ -2,10 +2,8 @@
 import { useEffect, useState } from "react";
 
 import {
-  EcoFund,
   Ecosystem,
-  getEcoFunds,
-  getEcosystemById,
+  getEcosystemById
 } from "@/library/backendAPI";
 import Button from "@/library/components/atoms/Button";
 import EcoFundsPassed from "@/library/components/molecules/EcoFundsPassed";
@@ -23,46 +21,23 @@ interface EcosystemData {
   tokenAmount: string;
   createdBy: string;
   createdAt: Date;
-  cardArray: EcoFundsData[];
-}
-
-interface EcoFundWithId extends EcoFund {
-  ecoFundId: number;
-}
-
-interface EcoFundsData {
-  typeIsLink: boolean;
-  href: string;
-  title: string;
-  description: string;
-  buttonText: string;
-  buttonImg: string;
 }
 
 const page = () => {
-  const { ecosystem: blocId } = useParams();
+  const { ecosystem: ecosystemId } = useParams();
 
   const [data, setData] = useState<Partial<EcosystemData>>();
   const [activeScreen, setActiveScreen] = useState("ecoFunds");
 
   useEffect(() => {
     (async () => {
-      const ecosystem: EcosystemWithId = await getEcosystemById("1"); // TODO:
-      const ecoFunds: EcoFundWithId[] = await getEcoFunds(""); // TODO:
+      const ecosystem: EcosystemWithId = await getEcosystemById(
+        ecosystemId as string
+      );
 
       const newEcosystem = {
         title: ecosystem.name,
         description: ecosystem.description,
-        cardArray: ecoFunds.map((ecoFund) => {
-          return {
-            typeIsLink: true,
-            href: `/ecoFund/${ecoFund.ecoFundId}`, // TODO:
-            title: ecoFund.title,
-            description: ecoFund.description,
-            buttonText: "Open EcoFund",
-            buttonImg: "enter.svg",
-          };
-        }),
       };
 
       setData(newEcosystem);
@@ -106,7 +81,7 @@ const page = () => {
           <Button
             text={"Propose EcoFund"}
             link={true}
-            href={"/"}
+            href={`${ecosystemId}/new-ecofund`}
             handleClick={undefined}
           />
         </div>
@@ -115,9 +90,9 @@ const page = () => {
           {(() => {
             switch (activeScreen) {
               case "ecoFunds":
-                return <EcoFundsPassed ecoFundId={"1"} />; // TODO:
+                return <EcoFundsPassed ecoFundId={ecosystemId} />; // TODO:
               case "proposals":
-                return <EcoFundsProposal ecoFundId={"1"} />; // TODO:
+                return <EcoFundsProposal ecoFundId={ecosystemId} />; // TODO:
               default:
                 return null;
             }
