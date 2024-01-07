@@ -13,9 +13,9 @@ interface SideNavState {
     emoji: string;
   }[];
   ecosystems: {
-    title: string;
+    name: string;
     ecosystemId: number;
-    logo: string;
+    logoURL: string;
   }[];
 }
 
@@ -24,6 +24,7 @@ const SideNav = () => {
   const userAddress = useStore((state) => state.userAddress);
 
   useEffect(() => {
+    if (!appActive) return;
     (async () => {
       const projects = await getProjects(userAddress);
       const ecosystems = await getEcosystems(userAddress);
@@ -35,7 +36,7 @@ const SideNav = () => {
 
       updateValues({ projects, ecosystems });
     })();
-  }, []);
+  }, [appActive, userAddress]);
 
   const [values, updateValues] = useReducer(
     (current: SideNavState, update: Partial<SideNavState>): SideNavState => {
@@ -100,9 +101,9 @@ const SideNav = () => {
                 values.ecosystems.map((item, index) => (
                   <NavCard
                     key={index}
-                    title={item.title}
+                    title={item.name}
                     href={`/ecosystems/${item.ecosystemId}`}
-                    logo={item.logo}
+                    logo={item.logoURL}
                   />
                 ))
               ) : (
