@@ -1,6 +1,8 @@
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import { EcoFund, getEcoFunds } from "@/library/backendAPI";
 import { isEmpty } from "@/library/utils";
-import { useEffect, useState } from "react";
 import LargeCard from "./LargeCard";
 
 interface EcoFundWithId extends EcoFund {
@@ -18,11 +20,12 @@ interface EcoFundsData {
 }
 
 const EcoFundsProposal = ({ ecoFundId }: { ecoFundId: any }) => {
+  const { ecosystem: ecosystemId } = useParams();
   const [data, setData] = useState<EcoFundsData[]>();
 
   useEffect(() => {
     (async () => {
-      const ecoFunds: EcoFundWithId[] = await getEcoFunds(ecoFundId); // TODO:
+      const ecoFunds: EcoFundWithId[] = await getEcoFunds(ecoFundId);
 
       console.log("ecoFunds ", ecoFunds);
 
@@ -31,7 +34,7 @@ const EcoFundsProposal = ({ ecoFundId }: { ecoFundId: any }) => {
         .map((ecoFund) => {
           return {
             typeIsLink: true,
-            href: `/ecoFund/${ecoFund.ecoFundId}`, // TODO:
+            href: `${ecosystemId}/${ecoFund.ecoFundId}`,
             title: ecoFund.title,
             description: ecoFund.description,
             buttonText: "Open Proposal",
