@@ -30,9 +30,9 @@ const page = () => {
 
   useEffect(() => {
     (async () => {
-      const ecosystem: EcosystemWithId[] = await getEcosystems("");
+      const ecosystems: EcosystemWithId[] = await getEcosystems("");
 
-      const newEcosystem = ecosystem.map((ecosystem) => {
+      const newEcosystems = ecosystems.map((ecosystem) => {
         return {
           typeIsLink: true,
           href: `/ecosystems/${ecosystem.ecosystemId}`,
@@ -44,7 +44,7 @@ const page = () => {
       });
 
       setData((prev) => {
-        prev.cardArray = newEcosystem;
+        prev.cardArray = newEcosystems;
         return { ...prev };
       });
     })();
