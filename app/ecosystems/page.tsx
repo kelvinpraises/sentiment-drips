@@ -21,7 +21,7 @@ interface EcosystemData {
 const initData = {
   title: "Ecosystems",
   subtitle: "Communities funding impactful projects",
-  tag: "Home | Ecosystems",
+  tag: "Ecosystems Home",
   cardArray: [] as EcosystemData[],
 };
 
