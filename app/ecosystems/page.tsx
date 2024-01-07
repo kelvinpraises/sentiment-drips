@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import { Ecosystem, getEcosystems } from "@/library/backendAPI";
 import LargeCard from "@/library/components/molecules/LargeCard";
 import TextHead from "@/library/components/molecules/TextHead";
-import { EcoFund, getEcoFunds } from "@/library/backendAPI";
 
-interface EcoFundWithId extends EcoFund {
-  ecoFundId: number;
+interface EcosystemWithId extends Ecosystem {
+  ecosystemId: number;
 }
 
-interface EcoFundsData {
+interface EcosystemData {
   typeIsLink: boolean;
   href: string;
   title: string;
@@ -20,10 +20,9 @@ interface EcoFundsData {
 
 const initData = {
   title: "Ecosystems",
-  subtitle:
-    "Supporting impactful retroactive project funding for stakeholders and builders",
+  subtitle: "Communities funding impactful projects",
   tag: "Home | Ecosystems",
-  cardArray: [] as EcoFundsData[],
+  cardArray: [] as EcosystemData[],
 };
 
 const page = () => {
@@ -31,22 +30,22 @@ const page = () => {
 
   useEffect(() => {
     (async () => {
-      const ecoFunds: EcoFundWithId[] = await getEcoFunds("");
+      const ecosystem: EcosystemWithId[] = await getEcosystems("");
 
-      const newEcoFunds = ecoFunds.map((ecoFund) => {
+      const newEcosystem = ecosystem.map((ecosystem) => {
         return {
           typeIsLink: true,
-          href: `/ecofunds/${ecoFund.ecoFundId}`,
-          title: ecoFund.title,
-          description: ecoFund.description,
-          buttonText: "Open Fund",
+          href: `/ecosystems/${ecosystem.ecosystemId}`,
+          title: ecosystem.name,
+          description: ecosystem.description,
+          buttonText: "Open Ecosystem",
           buttonImg: "enter.svg",
         };
       });
 
       setData((prev) => {
-        prev.cardArray = newEcoFunds;
-        return prev;
+        prev.cardArray = newEcosystem;
+        return { ...prev };
       });
     })();
   }, []);
@@ -67,6 +66,14 @@ const page = () => {
           />
         ))}
       </div>
+
+      {data.cardArray.length === 0 && (
+        <div className="flex items-center justify-center h-full">
+          <div className="flex flex-col gap-4 mt-[-10rem]">
+            <p>No ecosystems available</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
