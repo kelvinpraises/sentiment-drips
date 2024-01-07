@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-switch": "^1.0.3",
     "@swc-node/register": "^1.6.8",
     "cheerio": "^1.0.0-rc.12",
     "chokidar": "^3.5.3",
