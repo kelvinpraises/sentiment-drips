@@ -136,10 +136,12 @@ const NewEcoFundScreen = () => {
       </div>
       <Button
         text={"Submit"}
-        handleClick={() =>
-          createEcoFund(values, (d: string) => {
-            router.push("/ecoFunds/" + d);
-          })
+        handleClick={
+          () => {}
+          // () =>
+          // createEcoFund(values, (d: string) => { TODO: add correct values
+          //   router.push("/ecoFunds/" + d); TODO: push to correct route
+          // })
         }
       />
     </div>
