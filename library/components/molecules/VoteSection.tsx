@@ -3,10 +3,10 @@ import Button from "../atoms/Button";
 const VoteSection = ({ ecoFundId }: { ecoFundId: any }) => (
   <div className="flex flex-col gap-4">
     <div className=" flex justify-between">
-      <p className=" text-sm">Vote for what counts for the ecosystem</p>
-      <Button text={"Accept Proposals"} handleClick={undefined} />
-      <Button text={"Reject Proposals"} handleClick={undefined} />
-      <Button text={"Skip Proposals"} handleClick={undefined} />
+      <p className=" text-sm">
+        Vote on whether the proposal fits into the ecosystem
+      </p>
+      <Button text={"Vote on Proposal"} handleClick={undefined} />
     </div>
     <div className="flex flex-col gap-8">
       <p className="font-bold text-xl">Vote Info</p>
