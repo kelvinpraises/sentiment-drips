@@ -10,6 +10,7 @@ import {
 import Button from "@/library/components/atoms/Button";
 import EcoFundsPassed from "@/library/components/molecules/EcoFundsPassed";
 import EcoFundsProposal from "@/library/components/molecules/EcoFundsProposal";
+import { useParams } from "next/navigation";
 
 interface EcosystemWithId extends Ecosystem {
   ecosystemId: number;
@@ -39,6 +40,8 @@ interface EcoFundsData {
 }
 
 const page = () => {
+  const { ecosystem: blocId } = useParams();
+
   const [data, setData] = useState<Partial<EcosystemData>>();
   const [activeScreen, setActiveScreen] = useState("ecoFunds");
 
