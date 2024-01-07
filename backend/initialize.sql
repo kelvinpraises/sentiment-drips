@@ -28,6 +28,8 @@ CREATE TABLE EcoFunds (
     ecoFundId INTEGER PRIMARY KEY,
     createdBy TEXT NOT NULL,
     proposalPassed BOOLEAN NOT NULL,
+    ecoFundProposalId TEXT NOT NULL,
+    allocationProposalId TEXT NOT NULL,
     ecosystemId INTEGER NOT NULL,
     emoji TEXT NOT NULL,
     title TEXT NOT NULL,

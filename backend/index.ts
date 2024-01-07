@@ -297,12 +297,19 @@ app.post("/eco-funds", (req, res) => {
     return;
   }
 
-  const { ecosystemId, emoji, title, description, strategyAddress, createdAt } =
-    req.body;
+  const {
+    ecoFundProposalId,
+    ecosystemId,
+    emoji,
+    title,
+    description,
+    strategyAddress,
+    createdAt,
+  } = req.body;
 
   const insertQuery = `
-    INSERT INTO EcoFunds (createdBy, proposalPassed, ecosystemId, emoji, title, description, strategyAddress, createdAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO EcoFunds (createdBy, proposalPassed, ecoFundProposalId, allocationProposalId, ecosystemId, emoji, title, description, strategyAddress, createdAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.run(
@@ -310,6 +317,8 @@ app.post("/eco-funds", (req, res) => {
     [
       req.session.siwe.address,
       false,
+      ecoFundProposalId,
+      "",
       ecosystemId,
       emoji,
       title,
@@ -477,14 +486,18 @@ app.post("/showcase/:ecoFundId/:projectId", (req, res) => {
     VALUES (?, ?, ?, ?)
   `;
 
-  db.run(insertQuery, [ecoFundId, projectId, recipientId, status], function (err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
+  db.run(
+    insertQuery,
+    [ecoFundId, projectId, recipientId, status],
+    function (err) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
 
-    res.json({ message: "Project added to showcased projects successfully" });
-  });
+      res.json({ message: "Project added to showcased projects successfully" });
+    }
+  );
 });
 
 // Read all showcased project under an ecoFund
