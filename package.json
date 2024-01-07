@@ -13,6 +13,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-switch": "^1.0.3",
     "@swc-node/register": "^1.6.8",
+    "@tanstack/react-query": "^5.17.7",
     "cheerio": "^1.0.0-rc.12",
     "chokidar": "^3.5.3",
     "cors": "^2.8.5",
@@ -28,6 +29,7 @@
     "sqlite": "^5.0.1",
     "sqlite3": "^5.1.7-rc.0",
     "viem": "^2.0.2",
+    "wagmi": "^2.0.3",
     "zustand": "^4.4.3"
   },
   "devDependencies": {
