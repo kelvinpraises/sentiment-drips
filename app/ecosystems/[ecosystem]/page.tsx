@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Ecosystem, getEcosystemById } from "@/library/backendAPI";
 import Button from "@/library/components/atoms/Button";
-import EcoFundsPassed from "@/library/components/molecules/EcoFundsPassed";
-import EcoFundsProposal from "@/library/components/molecules/EcoFundsProposal";
+import EcoFundsPassed from "@/library/components/organisms/EcoFundsPassed";
+import EcoFundsProposal from "@/library/components/organisms/EcoFundsProposal";
 import { useParams } from "next/navigation";
 import { cn } from "@/library/utils";
 
