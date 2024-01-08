@@ -2,11 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 
+import { createProject } from "@/library/backendAPI";
 import Button from "@/library/components/atoms/Button";
 import Input from "@/library/components/atoms/Input";
 import TextHead from "@/library/components/molecules/TextHead";
 import EmojiPicker from "@/library/components/organisms/EmojiPicker";
-import { createProject } from "@/library/backendAPI";
 
 interface NewShowcaseProject {
   tokensRequested: number;
@@ -23,7 +23,6 @@ const page = () => {
       current: NewShowcaseProject,
       update: Partial<NewShowcaseProject>
     ): NewShowcaseProject => {
-      console.log(update.tokensRequested);
       return {
         ...current,
         ...update,
@@ -42,8 +41,6 @@ const page = () => {
       description: "",
     }
   );
-
-  console.log(values);
 
   return (
     <div className=" flex-1 bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 items-start">
