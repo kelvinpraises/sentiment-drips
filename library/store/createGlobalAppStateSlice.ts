@@ -5,6 +5,7 @@ type State = {
   userAddress: string;
   userName: string;
   userAvatarUrl: string;
+  modalElementId: string;
 };
 
 type Actions = {
@@ -12,13 +13,15 @@ type Actions = {
   setUserAddress: (address: string) => void;
   setUserName: (name: string) => void;
   setUserAvatarUrl: (avatarUrl: string) => void;
+  setModalElementId: (id: string) => void;
 };
 
-export default immer<State & Actions>((set, get) => ({
+export default immer<State & Actions>((set) => ({
   appActive: false,
   userAddress: "",
   userName: "",
   userAvatarUrl: "",
+  modalElementId: "",
 
   setAppActive: (isActive) =>
     set((state) => {
@@ -38,5 +41,10 @@ export default immer<State & Actions>((set, get) => ({
   setUserAvatarUrl: (avatarUrl) =>
     set((state) => {
       state.userAvatarUrl = avatarUrl;
+    }),
+
+  setModalElementId: (id) =>
+    set((state) => {
+      state.modalElementId = id;
     }),
 }));
