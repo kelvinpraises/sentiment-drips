@@ -1,14 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import {
-  Ecosystem,
-  getEcosystemById
-} from "@/library/backendAPI";
+import { Ecosystem, getEcosystemById } from "@/library/backendAPI";
 import Button from "@/library/components/atoms/Button";
 import EcoFundsPassed from "@/library/components/molecules/EcoFundsPassed";
 import EcoFundsProposal from "@/library/components/molecules/EcoFundsProposal";
 import { useParams } from "next/navigation";
+import { cn } from "@/library/utils";
 
 interface EcosystemWithId extends Ecosystem {
   ecosystemId: number;
@@ -57,17 +55,19 @@ const page = () => {
       <div className="flex flex-col gap-4 h-full">
         <div className="flex gap-4 items-center text-[#B1BAC1]">
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "ecoFunds" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("ecoFunds")}
           >
             EcoFunds
           </button>
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "proposals" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("proposals")}
           >
             Proposals
