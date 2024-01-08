@@ -11,7 +11,7 @@ const data = {
 
   cardArray: [
     {
-      href: "/new-ecosystem",
+      href: "/ecosystems/new-ecosystem",
       typeIsLink: true,
       image: "rocket.svg",
       title: "Fund Ecosystem Projects",
