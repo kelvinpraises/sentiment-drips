@@ -81,11 +81,10 @@ const AllocateSection = ({ ecoFundId }: { ecoFundId: any }) => {
   const userName = useStore((state) => state.userName);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <div className=" flex justify-between">
         <p className="text-sm">
-          Sentiments determine what projects are worth, and are averaged for
-          final voting
+          Allocate project value sentiment as they are averaged for final voting
         </p>
         <Button
           text={"Allocate Sentiment"}
@@ -94,7 +93,6 @@ const AllocateSection = ({ ecoFundId }: { ecoFundId: any }) => {
       </div>
 
       <div className="flex flex-col gap-8">
-        <p className="font-bold text-xl">Allocators</p>
         {values.showAllocateSentiment && (
           <AllocationCard
             ecoFundId={ecoFundId}
