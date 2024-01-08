@@ -6,6 +6,8 @@ import { cn } from "@/library/utils";
 import AllocateSection from "./AllocateSection";
 import ShowcaseSection from "./ShowcaseSection";
 import VoteSection from "./VoteSection";
+import ReviewSection from "./ReviewSection";
+import DistributeSection from "./DistributeSection";
 
 const EcoFundPassed = ({ id }: { id: string }) => {
   const [activeScreen, setActiveScreen] = useState("showcase");
@@ -108,10 +110,14 @@ const EcoFundPassed = ({ id }: { id: string }) => {
             switch (activeScreen) {
               case "showcase":
                 return <ShowcaseSection ecoFundId={id} />;
+              case "review":
+                return <ReviewSection ecoFundId={id} />;
               case "allocate":
                 return <AllocateSection ecoFundId={id} />;
               case "vote":
                 return <VoteSection ecoFundId={id} />;
+              case "distribute":
+                return <DistributeSection ecoFundId={id} />;
               default:
                 return null;
             }
