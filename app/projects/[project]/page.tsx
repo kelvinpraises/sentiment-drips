@@ -1,19 +1,18 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import TextHead from "@/library/components/molecules/TextHead";
 import { Project, getProjectById } from "@/library/backendAPI";
+import TextHead from "@/library/components/molecules/TextHead";
 
 const page = () => {
-  const pathname = usePathname();
-  const id = pathname.split("/")[3];
+  const { project: projectId } = useParams();
 
   const [data, setData] = useState<Project>();
 
   useEffect(() => {
     (async () => {
-      const project = await getProjectById(id);
+      const project = await getProjectById(projectId as string);
 
       setData(project);
     })();
@@ -27,25 +26,7 @@ const page = () => {
         tag={"EcoFund Project"}
       />
       <div className=" flex flex-col gap-8">
-        <p className=" font-bold text-xl">Funds Applied</p>
-        {/* <div className=" grid grid-cols-2 gap-8">
-          {data?.cardArray.map((card, index) => (
-            <Card1
-              key={index}
-              title={card.title}
-              description={card.text}
-              buttonText={card.buttonText}
-              buttonOnclick={function (): {} {
-                throw new Error("Function not implemented.");
-              }}
-              buttonImg="enter.svg"
-            />
-          ))}
-        </div> */}
-      </div>
-
-      <div className=" flex flex-col gap-8">
-        <p className=" font-bold text-xl">Funded Drips</p>
+        <p className=" font-bold text-xl">EcoFunds Applied</p>
         {/* <div className=" grid grid-cols-2 gap-8">
           {data?.cardArray.map((card, index) => (
             <Card1
