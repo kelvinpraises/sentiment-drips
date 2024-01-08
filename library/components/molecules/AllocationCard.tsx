@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, useState } from "react";
 
 import { Allocation } from "@/library/backendAPI";
-import { AllocateSectionState } from "./AllocateSection";
+import { AllocateSectionState } from "../organisms/AllocateSection";
 
 interface cardProps {
   ecoFundId: string;
