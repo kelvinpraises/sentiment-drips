@@ -10,7 +10,7 @@ import {
 import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 import SelectProject from "../atoms/SelectProject";
-import LargeCard from "./LargeCard";
+import LargeCard from "../molecules/LargeCard";
 
 interface ProjectWithId extends Project {
   projectId: number;
@@ -34,6 +34,7 @@ interface ShowcaseSectionState {
 
 const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
   const userAddress = useStore((state) => state.userAddress);
+  const modalElementId = useStore((state) => state.modalElementId);
 
   useEffect(() => {
     (async () => {
@@ -63,6 +64,8 @@ const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
       personalProjects: [],
     }
   );
+
+  // document.getElementById(modalElementId)
 
   return (
     <div className="flex flex-col gap-4">

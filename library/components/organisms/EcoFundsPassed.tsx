@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { EcoFund, getEcoFunds } from "@/library/backendAPI";
 import { isEmpty } from "@/library/utils";
-import LargeCard from "./LargeCard";
+import LargeCard from "../molecules/LargeCard";
 
 interface EcoFundWithId extends EcoFund {
   ecoFundId: number;

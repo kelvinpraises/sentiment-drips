@@ -8,7 +8,7 @@ import {
 } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
-import AllocationCard from "./AllocationCard";
+import AllocationCard from "../molecules/AllocationCard";
 
 interface ecoFundProjects {
   projectId: number;

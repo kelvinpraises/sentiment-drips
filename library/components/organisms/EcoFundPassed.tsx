@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 import { EcoFundState } from "@/app/ecosystems/[ecosystem]/[fund]/page";
 import { getEcoFundById } from "@/library/backendAPI";
