@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { EcoFundState } from "@/app/ecosystems/[ecosystem]/[fund]/page";
 import { getEcoFundById } from "@/library/backendAPI";
+import { cn } from "@/library/utils";
 import AllocateSection from "./AllocateSection";
 import ShowcaseSection from "./ShowcaseSection";
 import VoteSection from "./VoteSection";
@@ -56,41 +57,46 @@ const EcoFundPassed = ({ id }: { id: string }) => {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4 items-center text-[#B1BAC1]">
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "showcase" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("showcase")}
           >
             Showcase
           </button>
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "review" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("review")}
           >
             Review
           </button>
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "allocate" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("allocate")}
           >
             Allocate
           </button>
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "vote" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("vote")}
           >
             Vote
           </button>
           <button
-            className={`font-medium text-xl ${
+            className={cn(
+              "font-bold text-xl",
               activeScreen === "distribute" && "text-[#647684]"
-            }`}
+            )}
             onClick={() => setActiveScreen("distribute")}
           >
             Distribute
