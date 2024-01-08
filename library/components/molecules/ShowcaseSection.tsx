@@ -77,8 +77,6 @@ const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
       </div>
 
       <div className="flex flex-col gap-8">
-        <p className="font-bold text-xl">Projects</p>
-
         <div
           className="flex-1 bg-white rounded-[10px] p-8 overflow-x-scroll flex gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]"
           style={{ display: values.showPersonalProjects ? "flex" : "none" }}
