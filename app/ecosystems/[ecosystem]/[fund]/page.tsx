@@ -1,10 +1,11 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ElementRef, useEffect, useRef, useState } from "react";
 
 import { getEcoFundById } from "@/library/backendAPI";
-import EcoFundPassed from "@/library/components/molecules/EcoFundPassed";
-import EcoFundProposal from "@/library/components/molecules/EcoFundProposal";
+import EcoFundPassed from "@/library/components/organisms/EcoFundPassed";
+import EcoFundProposal from "@/library/components/organisms/EcoFundProposal";
+import { useStore } from "@/library/store/useStore";
 
 export interface EcoFundState {
   id: string;
@@ -23,6 +24,16 @@ const page = () => {
 
   const [data, setData] = useState<Partial<EcoFundState>>();
 
+  const modalRef = useRef<ElementRef<"div">>(null);
+  const setModalElementId = useStore((state) => state.setModalElementId);
+
+  useEffect(() => {
+    // set up the modal
+    if (modalRef.current) {
+      setModalElementId(modalRef.current.id);
+    }
+  }, [modalRef]);
+
   useEffect(() => {
     (async () => {
       const data = await getEcoFundById(id);
@@ -36,18 +47,22 @@ const page = () => {
   }, [id]);
 
   return (
-    <div className="flex-1 bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]">
+    <main
+      ref={modalRef}
+      className="flex-1 relative bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]"
+      id="fundModal"
+    >
       {(() => {
         switch (data?.proposalPassed) {
           case 0:
-          return <EcoFundProposal  id={id} />; // TODO:
+            return <EcoFundProposal id={id} />; // TODO:
           case 1:
             return <EcoFundPassed id={id} />;
           default:
             return null;
         }
       })()}
-    </div>
+    </main>
   );
 };
 
