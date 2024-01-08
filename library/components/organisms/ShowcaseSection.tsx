@@ -1,16 +1,11 @@
 "use client";
 import { useEffect, useReducer } from "react";
 
-import {
-  Project,
-  showcaseEcoFundProject,
-  getEcoFundProjects,
-  getProjects,
-} from "@/library/backendAPI";
+import { Project, getEcoFundProjects, getProjects } from "@/library/backendAPI";
 import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
-import SelectProject from "../atoms/SelectProject";
 import LargeCard from "../molecules/LargeCard";
+import ShowcaseModal from "../molecules/ShowcaseModal";
 
 interface ProjectWithId extends Project {
   projectId: number;
@@ -65,54 +60,32 @@ const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
     }
   );
 
-  // document.getElementById(modalElementId)
-
   return (
     <div className="flex flex-col gap-4">
       <div className=" flex justify-between">
         <p className=" text-sm">
           Submit a project to this showcase for a possible funded drip
         </p>
-        <Button
-          text={"Showcase Project"}
-          handleClick={() => updateValues({ showPersonalProjects: true })}
-        />
+
+        <ShowcaseModal modalElementId={modalElementId}>
+          <Button text={"Showcase Project"} handleClick={() => {}} />
+        </ShowcaseModal>
       </div>
 
-      <div className="flex flex-col gap-8">
-        <div
-          className="flex-1 bg-white rounded-[10px] p-8 overflow-x-scroll flex gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]"
-          style={{ display: values.showPersonalProjects ? "flex" : "none" }}
-        >
-          {values.personalProjects.map((project) => {
-            return (
-              <SelectProject
-                props={{
-                  showcaseEcoFundProject,
-                  updateValues,
-                  project,
-                  ecoFundId,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        <div className="w-[520px] flex flex-col gap-4">
-          {values.ecoFundProjects?.map((x) => {
-            return (
-              <LargeCard
-                title={x.title}
-                description={x.description}
-                buttonText={"Open Fund"}
-                buttonImg={"enter.svg"}
-                buttonOnclick={() => {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            );
-          })}
-        </div>
+      <div className="w-[520px] flex flex-col gap-4">
+        {values.ecoFundProjects?.map((x) => {
+          return (
+            <LargeCard
+              title={x.title}
+              description={x.description}
+              buttonText={"Open Fund"}
+              buttonImg={"enter.svg"}
+              buttonOnclick={() => {
+                throw new Error("Function not implemented.");
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
