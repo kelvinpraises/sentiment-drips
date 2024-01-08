@@ -48,7 +48,7 @@ const EcoFundProposal = ({ id }: { id: string }) => {
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex gap-4 items-center text-[#B1BAC1]">
-          <p className="font-medium text-xl text-[#647684]">Proposal Details</p>
+          <p className="font-bold text-xl text-[#647684]">Proposal Details</p>
         </div>
 
         <div className=" flex justify-between">
