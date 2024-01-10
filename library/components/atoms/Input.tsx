@@ -13,7 +13,7 @@ interface inputProps {
 const Input = (prop: inputProps) => {
   return (
     <div className="flex flex-col gap-2 w-full">
-      {prop.label && <p className=" text-sm font-medium">{prop.label}</p>}
+      {prop.label && <p className=" text-sm font-normal">{prop.label}</p>}
       {prop.input ? (
         <input
           type={prop.type ? prop.type : "text"}
