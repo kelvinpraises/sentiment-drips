@@ -75,7 +75,7 @@ const ReviewCard = (card: cardProps) => {
 
             <Input
               label={"Token Request Amount"}
-              input={false}
+              input={true}
               disabled
               value={"Yeah hello there"}
               onChange={(e) => {}}
