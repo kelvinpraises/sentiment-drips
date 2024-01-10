@@ -1,15 +1,48 @@
 import { useStore } from "@/library/store/useStore";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import React from "react";
+import React, { useReducer } from "react";
 import ProjectSelect from "./ProjectSelect";
+import Input from "../atoms/Input";
 
 interface ModalProps {
   children: React.ReactNode;
 }
 
+interface ShowcaseProject {
+  tokensRequested: number;
+  emoji: string;
+  title: string;
+  description: string;
+}
+
+const initialState = {
+  emoji: "",
+  title: "",
+  tokensRequested: 0,
+  description: "",
+};
+
+const stateReducer = (
+  current: ShowcaseProject,
+  update: Partial<ShowcaseProject>
+): ShowcaseProject => {
+  return {
+    ...current,
+    ...update,
+    tokensRequested:
+      update.tokensRequested === undefined
+        ? current.tokensRequested
+        : isNaN(current.tokensRequested)
+        ? 0
+        : update.tokensRequested || 0,
+  };
+};
+
 const ShowcaseModal: React.FC<ModalProps> = ({ children }: ModalProps) => {
   const modalElementId = useStore((state) => state.modalElementId);
+
+  const [values, updateValues] = useReducer(stateReducer, initialState);
 
   return (
     <Dialog.Root>
@@ -48,6 +81,15 @@ const ShowcaseModal: React.FC<ModalProps> = ({ children }: ModalProps) => {
               ): void {
                 throw new Error("Function not implemented.");
               }}
+            />
+
+            <Input
+              label={"Token Request Amount"}
+              input={true}
+              value={values.tokensRequested.toString()}
+              onChange={(e) =>
+                updateValues({ tokensRequested: parseFloat(e.target.value) })
+              }
             />
 
             <div className="mt-[25px] flex justify-end">
