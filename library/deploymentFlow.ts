@@ -42,13 +42,13 @@ export const deployVotingToken = async ({
   maxSupply: bigint;
 }) => {
   const [account] = await walletClient.getAddresses();
-  const hash = await walletClient.deployContract({
+  const txHash = await walletClient.deployContract({
     abi: votingTokenABI,
     account,
     args: [name, symbol, maxSupply],
     bytecode: `0x${votingTokenBytecode}`,
   });
-  return hash;
+  return txHash;
 };
 
 export const deployTimeLock = async ({
@@ -61,13 +61,13 @@ export const deployTimeLock = async ({
   executors: Address[];
 }) => {
   const [account] = await walletClient.getAddresses();
-  const hash = await walletClient.deployContract({
+  const txHash = await walletClient.deployContract({
     abi: timeLockABI,
     account,
     args: [minDelaySec, proposers, executors],
     bytecode: `0x${timeLockBytecode}`,
   });
-  return hash;
+  return txHash;
 };
 
 export const deployGovernor = async ({
@@ -84,7 +84,7 @@ export const deployGovernor = async ({
   quorumPercentage: bigint;
 }) => {
   const [account] = await walletClient.getAddresses();
-  const hash = await walletClient.deployContract({
+  const txHash = await walletClient.deployContract({
     abi: governorABI,
     account,
     args: [
@@ -96,7 +96,7 @@ export const deployGovernor = async ({
     ],
     bytecode: `0x${governorBytecode}`,
   });
-  return hash;
+  return txHash;
 };
 
 export const setupGovernance = async ({
@@ -150,9 +150,11 @@ export const setupGovernance = async ({
     account,
   });
 
-  await walletClient.writeContract(req1);
-  await walletClient.writeContract(req2);
-  await walletClient.writeContract(req3);
+  const req1TxHash = await walletClient.writeContract(req1);
+  const req2TxHash = await walletClient.writeContract(req2);
+  const req3TxHash = await walletClient.writeContract(req3);
+
+  return [req1TxHash, req2TxHash, req3TxHash];
 };
 
 export const deployStrategy = async ({
@@ -163,11 +165,11 @@ export const deployStrategy = async ({
   strategyName: string;
 }) => {
   const [account] = await walletClient.getAddresses();
-  const hash = await walletClient.deployContract({
+  const txHash = await walletClient.deployContract({
     abi: donationVotingMerkleDripABI,
     account,
     args: [alloAddress, strategyName],
     bytecode: `0x${donationVotingMerkleDripBytecode}`,
   });
-  return hash;
+  return txHash;
 };
