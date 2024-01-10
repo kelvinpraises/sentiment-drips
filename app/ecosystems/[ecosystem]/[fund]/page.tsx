@@ -24,15 +24,6 @@ const page = () => {
 
   const [data, setData] = useState<Partial<EcoFundState>>();
 
-  const modalRef = useRef<ElementRef<"div">>(null);
-  const setModalElementId = useStore((state) => state.setModalElementId);
-
-  useEffect(() => {
-    // set up the modal
-    if (modalRef.current) {
-      setModalElementId(modalRef.current.id);
-    }
-  }, [modalRef]);
 
   useEffect(() => {
     (async () => {
@@ -48,7 +39,6 @@ const page = () => {
 
   return (
     <main
-      ref={modalRef}
       className="flex-1 relative bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]"
       id="fundModal"
     >
