@@ -1,9 +1,173 @@
-export const deployGovToken = () => {};
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  custom,
+  http,
+  zeroAddress,
+} from "viem";
+import { goerli } from "viem/chains";
+import {
+  donationVotingMerkleDripABI,
+  governorABI,
+  timeLockABI,
+  votingTokenABI,
+} from "./contract/abi-data";
+import {
+  donationVotingMerkleDripBytecode,
+  governorBytecode,
+  timeLockBytecode,
+  votingTokenBytecode,
+} from "./contract/bytecode-data";
 
-export const deployTimeLock = () => {};
+const walletClient = createWalletClient({
+  chain: goerli,
+  transport: custom(
+    typeof window !== "undefined" ? (window as any).ethereum : null
+  ),
+});
 
-export const deployGovernor = () => {};
+const publicClient = createPublicClient({
+  chain: goerli,
+  transport: http(),
+});
 
-export const setupGovernance = () => {};
+export const deployVotingToken = async ({
+  name,
+  symbol,
+  maxSupply,
+}: {
+  name: string;
+  symbol: string;
+  maxSupply: bigint;
+}) => {
+  const [account] = await walletClient.getAddresses();
+  const hash = await walletClient.deployContract({
+    abi: votingTokenABI,
+    account,
+    args: [name, symbol, maxSupply],
+    bytecode: `0x${votingTokenBytecode}`,
+  });
+  return hash;
+};
 
-export const deployStrategy = () => {};
+export const deployTimeLock = async ({
+  minDelaySec,
+  proposers,
+  executors,
+}: {
+  minDelaySec: bigint;
+  proposers: Address[];
+  executors: Address[];
+}) => {
+  const [account] = await walletClient.getAddresses();
+  const hash = await walletClient.deployContract({
+    abi: timeLockABI,
+    account,
+    args: [minDelaySec, proposers, executors],
+    bytecode: `0x${timeLockBytecode}`,
+  });
+  return hash;
+};
+
+export const deployGovernor = async ({
+  token,
+  timeLock,
+  votingDelayBlocks,
+  votingPeriodBlocks,
+  quorumPercentage,
+}: {
+  token: Address;
+  timeLock: Address;
+  votingDelayBlocks: number;
+  votingPeriodBlocks: number;
+  quorumPercentage: bigint;
+}) => {
+  const [account] = await walletClient.getAddresses();
+  const hash = await walletClient.deployContract({
+    abi: governorABI,
+    account,
+    args: [
+      token,
+      timeLock,
+      votingDelayBlocks,
+      votingPeriodBlocks,
+      quorumPercentage,
+    ],
+    bytecode: `0x${governorBytecode}`,
+  });
+  return hash;
+};
+
+export const setupGovernance = async ({
+  timeLockAddress,
+  governorAddress,
+}: {
+  timeLockAddress: Address;
+  governorAddress: Address;
+}) => {
+  const [account] = await walletClient.getAddresses();
+
+  const proposeRole = await publicClient.readContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "PROPOSER_ROLE",
+  });
+
+  const executorRole = await publicClient.readContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "EXECUTOR_ROLE",
+  });
+
+  const adminRole = await publicClient.readContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "DEFAULT_ADMIN_ROLE",
+  });
+
+  const { request: req1 } = await publicClient.simulateContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "grantRole",
+    args: [proposeRole, governorAddress],
+    account,
+  });
+
+  const { request: req2 } = await publicClient.simulateContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "grantRole",
+    args: [executorRole, zeroAddress],
+    account,
+  });
+
+  const { request: req3 } = await publicClient.simulateContract({
+    address: timeLockAddress,
+    abi: timeLockABI,
+    functionName: "revokeRole",
+    args: [adminRole, account],
+    account,
+  });
+
+  await walletClient.writeContract(req1);
+  await walletClient.writeContract(req2);
+  await walletClient.writeContract(req3);
+};
+
+export const deployStrategy = async ({
+  alloAddress,
+  strategyName,
+}: {
+  alloAddress: Address;
+  strategyName: string;
+}) => {
+  const [account] = await walletClient.getAddresses();
+  const hash = await walletClient.deployContract({
+    abi: donationVotingMerkleDripABI,
+    account,
+    args: [alloAddress, strategyName],
+    bytecode: `0x${donationVotingMerkleDripBytecode}`,
+  });
+  return hash;
+};
