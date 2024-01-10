@@ -8,45 +8,46 @@ import Input from "@/library/components/atoms/Input";
 import TextHead from "@/library/components/molecules/TextHead";
 import EmojiPicker from "@/library/components/organisms/EmojiPicker";
 
-interface NewShowcaseProject {
+interface NewProject {
   tokensRequested: number;
   emoji: string;
   title: string;
   description: string;
 }
 
+const initialState = {
+  emoji: "",
+  title: "",
+  tokensRequested: 0,
+  description: "",
+};
+
+const stateReducer = (
+  current: NewProject,
+  update: Partial<NewProject>
+): NewProject => {
+  return {
+    ...current,
+    ...update,
+    tokensRequested:
+      update.tokensRequested === undefined
+        ? current.tokensRequested
+        : isNaN(current.tokensRequested)
+        ? 0
+        : update.tokensRequested || 0,
+  };
+};
+
 const page = () => {
   const router = useRouter();
 
-  const [values, updateValues] = useReducer(
-    (
-      current: NewShowcaseProject,
-      update: Partial<NewShowcaseProject>
-    ): NewShowcaseProject => {
-      return {
-        ...current,
-        ...update,
-        tokensRequested:
-          update.tokensRequested === undefined
-            ? current.tokensRequested
-            : isNaN(current.tokensRequested)
-            ? 0
-            : update.tokensRequested || 0,
-      };
-    },
-    {
-      emoji: "",
-      title: "",
-      tokensRequested: 0,
-      description: "",
-    }
-  );
+  const [values, updateValues] = useReducer(stateReducer, initialState);
 
   return (
     <div className=" flex-1 bg-white rounded-[10px] p-8 overflow-y-scroll flex flex-col gap-8 items-start">
       <TextHead
-        title="Showcase Project"
-        description="Showcase a project to qualify for an ecosystem funding round."
+        title="Create Project"
+        description="Create a project to showcase in an ecosystem funding round."
       />
       <div className=" w-[480px] flex flex-col gap-8">
         <div className=" flex flex-col gap-2 w-full">
@@ -60,14 +61,7 @@ const page = () => {
             />
           </div>
         </div>
-        <Input
-          label={"Token Request Amount"}
-          input={true}
-          value={values.tokensRequested.toString()}
-          onChange={(e) =>
-            updateValues({ tokensRequested: parseFloat(e.target.value) })
-          }
-        />
+
         <Input
           label={"Project Description"}
           input={false}
