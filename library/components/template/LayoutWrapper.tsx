@@ -7,6 +7,7 @@ import useSIWE from "@/library/hooks/siwe";
 import { useStore } from "@/library/store/useStore";
 import Footer from "../organisms/Footer";
 import Header from "../organisms/Header";
+import { ElementRef, useEffect, useRef } from "react";
 
 const inter = Inter({ subsets: ["latin"], preload: true });
 
@@ -38,6 +39,16 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   // Check if the current pathname matches any of the path patterns
   const isPathMatched = pathPatterns.some((pattern) => pattern.test(pathname));
 
+  const modalRef = useRef<ElementRef<"div">>(null);
+  const setModalElementId = useStore((state) => state.setModalElementId);
+
+  useEffect(() => {
+    // set up the modal
+    if (modalRef.current) {
+      setModalElementId(modalRef.current.id);
+    }
+  }, [modalRef]);
+
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -48,11 +59,17 @@ const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
             <Footer className=" pt-8" />
           </main>
         ) : (
-          <main className=" flex flex-col gap-8 w-screen h-screen">
+          <main className="flex flex-col gap-8 w-screen h-screen">
             <Header />
-            <div className=" flex flex-1 overflow-y-scroll px-8 gap-8">
+            <div className=" flex flex-1 px-8 overflow-hidden gap-8 relative w-full">
               <SideNav />
-              {children}
+              <div
+                ref={modalRef}
+                id="layoutModal"
+                className="relative flex w-full bg-white rounded-[10px] overflow-hidden shadow-[0px_4px_15px_5px_rgba(226,229,239,0.25)]"
+              >
+                {children}
+              </div>
             </div>
             <Footer />
           </main>
