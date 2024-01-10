@@ -1,18 +1,16 @@
-import React from "react";
+import { useStore } from "@/library/store/useStore";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import React from "react";
 import ProjectSelect from "./ProjectSelect";
-import Input from "../atoms/Input";
 
 interface ModalProps {
   children: React.ReactNode;
-  modalElementId: string;
 }
 
-const ShowcaseModal: React.FC<ModalProps> = ({
-  children,
-  modalElementId,
-}: ModalProps) => {
+const ShowcaseModal: React.FC<ModalProps> = ({ children }: ModalProps) => {
+  const modalElementId = useStore((state) => state.modalElementId);
+
   return (
     <Dialog.Root>
       <Dialog.Trigger>{children}</Dialog.Trigger>
@@ -51,7 +49,6 @@ const ShowcaseModal: React.FC<ModalProps> = ({
                 throw new Error("Function not implemented.");
               }}
             />
-
 
             <div className="mt-[25px] flex justify-end">
               <Dialog.Close asChild>

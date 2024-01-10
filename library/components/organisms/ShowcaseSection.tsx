@@ -29,7 +29,6 @@ interface ShowcaseSectionState {
 
 const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
   const userAddress = useStore((state) => state.userAddress);
-  const modalElementId = useStore((state) => state.modalElementId);
 
   useEffect(() => {
     (async () => {
@@ -67,7 +66,7 @@ const ShowcaseSection = ({ ecoFundId }: { ecoFundId: any }) => {
           Submit a project to this showcase for a possible funded drip
         </p>
 
-        <ShowcaseModal modalElementId={modalElementId}>
+        <ShowcaseModal >
           <Button text={"Showcase Project"} handleClick={() => {}} />
         </ShowcaseModal>
       </div>
