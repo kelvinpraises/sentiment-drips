@@ -1,12 +1,10 @@
 "use client";
 import { createUser } from "@/library/backendAPI";
-import useSIWE from "@/library/hooks/siwe";
+import { connectWallet, disconnectWallet } from "@/library/siwe";
 import { useStore } from "@/library/store/useStore";
 import Button from "../atoms/Button";
 
 const LoginButton = () => {
-  const { connectWallet, disconnectWallet } = useSIWE();
-
   const appActive = useStore((store) => store.appActive);
   const setAppActive = useStore((store) => store.setAppActive);
   const setUserName = useStore((store) => store.setUserName);

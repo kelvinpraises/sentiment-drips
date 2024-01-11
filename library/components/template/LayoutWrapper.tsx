@@ -2,19 +2,17 @@
 import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 
-import SideNav from "../organisms/SideNav";
-import useSIWE from "@/library/hooks/siwe";
+import { verifyAuthentication } from "@/library/siwe";
 import { useStore } from "@/library/store/useStore";
+import { ElementRef, useEffect, useRef } from "react";
 import Footer from "../organisms/Footer";
 import Header from "../organisms/Header";
-import { ElementRef, useEffect, useRef } from "react";
+import SideNav from "../organisms/SideNav";
 
 const inter = Inter({ subsets: ["latin"], preload: true });
 
 const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  // check login and update state
-  const { verifyAuthentication } = useSIWE();
 
   const setAppActive = useStore((store) => store.setAppActive);
   const setUserName = useStore((store) => store.setUserName);
