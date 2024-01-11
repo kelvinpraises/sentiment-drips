@@ -1,100 +1,80 @@
-import { BrowserProvider } from "ethers";
 import { SiweMessage } from "siwe";
+import { Address, createWalletClient, custom } from "viem";
+import { goerli } from "viem/chains";
 
-const domain = typeof window !== "undefined" ? window.location.host : undefined;
-const origin =
-  typeof window !== "undefined" ? window.location.origin : undefined;
-const provider =
-  typeof window !== "undefined"
-    ? new BrowserProvider((window as any).ethereum)
-    : undefined;
+interface UserData {
+  name: string;
+  address: string;
+  avatarUrl: string;
+}
+
+const hasWindow = typeof window !== "undefined";
+
+const domain = hasWindow ? window.location.host : undefined;
+const origin = hasWindow ? window.location.origin : undefined;
 const BACKEND_ADDR = "http://localhost:3002";
 
-const useSIWE = () => {
-  function disconnectWallet(callback: () => void) {
-    fetch(`${BACKEND_ADDR}/logout`, {
-      credentials: "include",
-    }).then(() => callback());
-  }
+export const walletClient = createWalletClient({
+  chain: goerli,
+  transport: custom(hasWindow ? (window as any).ethereum : null),
+});
 
-  function connectWallet(
-    callback: ({
-      name,
-      address,
-    }: {
-      name: string;
-      address: string;
-      avatarUrl: string;
-    }) => void
-  ) {
-    provider
-      ?.send("eth_requestAccounts", [])
-      .then(() => {
-        signInWithEthereum().then((res) => {
-          res
-            ?.json()
-            .then(
-              (userData: {
-                name: string;
-                address: string;
-                avatarUrl: string;
-              }) => {
-                callback(userData);
-              }
-            );
-        });
-      })
-      .catch(() => console.log("user rejected request"));
-  }
+export function disconnectWallet(callback: () => void) {
+  fetch(`${BACKEND_ADDR}/logout`, {
+    credentials: "include",
+  }).then(() => callback());
+}
 
-  async function createSiweMessage(address: string, statement: string) {
-    const res = await fetch(`${BACKEND_ADDR}/nonce`, {
-      credentials: "include",
-    });
-    const message = new SiweMessage({
-      domain,
-      address,
-      statement,
-      uri: origin,
-      version: "1",
-      chainId: 1,
-      nonce: await res.text(),
-    });
-    return message.prepareMessage();
-  }
+export async function connectWallet(callback: (data: UserData) => void) {
+  await walletClient.switchChain({ id: goerli.id });
+  const [address] = await walletClient.requestAddresses();
+  const res = await signInWithEthereum(address);
+  const userData: UserData = await res?.json();
+  callback(userData);
+}
 
-  async function signInWithEthereum() {
-    const signer = await provider?.getSigner();
+export async function verifyAuthentication(callback: (res: Response) => void) {
+  const res = await fetch(`${BACKEND_ADDR}/verifyAuthentication`, {
+    credentials: "include",
+  });
+  callback(res);
+}
 
-    if (!signer) {
-      return;
-    }
-    const message = await createSiweMessage(
-      await signer.getAddress(),
-      "Sign in with Ethereum to the app."
-    );
-    const signature = await signer.signMessage(message);
+async function createSiweMessage(address: string, statement: string) {
+  const res = await fetch(`${BACKEND_ADDR}/nonce`, {
+    credentials: "include",
+  });
+  const message = new SiweMessage({
+    domain,
+    address,
+    statement,
+    uri: origin,
+    version: "1",
+    chainId: 1,
+    nonce: await res.text(),
+  });
+  return message.prepareMessage();
+}
 
-    const res = await fetch(`${BACKEND_ADDR}/verify`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message, signature }),
-      credentials: "include",
-    });
-    return res;
-  }
+async function signInWithEthereum(address: Address) {
+  const message = await createSiweMessage(
+    address,
+    "Sign in with Ethereum to the app."
+  );
 
-  function verifyAuthentication(callback: (res: Response) => void) {
-    fetch(`${BACKEND_ADDR}/verifyAuthentication`, {
-      credentials: "include",
-    }).then((res) => {
-      callback(res);
-    });
-  }
+  const signature = await walletClient.signMessage({
+    account: address,
+    message,
+  });
 
-  return { connectWallet, disconnectWallet, verifyAuthentication };
-};
+  const res = await fetch(`${BACKEND_ADDR}/verify`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message, signature }),
+    credentials: "include",
+  });
 
-export default useSIWE;
+  return res;
+}
