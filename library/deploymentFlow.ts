@@ -91,9 +91,7 @@ export const deployTimeLock = async ({
 }) => {
   const wallet = await walletClient();
   const [account] = await wallet.getAddresses();
-  const txHash = await (
-    await walletClient()
-  ).deployContract({
+  const txHash = await wallet.deployContract({
     abi: timeLockABI,
     account,
     args: [minDelaySec, proposers, executors],
@@ -126,9 +124,7 @@ export const deployGovernor = async ({
 }) => {
   const wallet = await walletClient();
   const [account] = await wallet.getAddresses();
-  const txHash = await (
-    await walletClient()
-  ).deployContract({
+  const txHash = await wallet.deployContract({
     abi: governorABI,
     account,
     args: [
@@ -159,45 +155,43 @@ export const setupGovernance = async ({
   const wallet = await walletClient();
   const [account] = await wallet.getAddresses();
 
-  const proposeRole = await publicClient.readContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
-    functionName: "PROPOSER_ROLE",
-  });
+  const timeLockCOntract = { address: timeLockAddress, abi: timeLockABI };
 
-  const executorRole = await publicClient.readContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
-    functionName: "EXECUTOR_ROLE",
-  });
-
-  const adminRole = await publicClient.readContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
-    functionName: "DEFAULT_ADMIN_ROLE",
+  const [proposeRole, executorRole, adminRole] = await publicClient.multicall({
+    contracts: [
+      {
+        ...timeLockCOntract,
+        functionName: "PROPOSER_ROLE",
+      },
+      {
+        ...timeLockCOntract,
+        functionName: "EXECUTOR_ROLE",
+      },
+      {
+        ...timeLockCOntract,
+        functionName: "DEFAULT_ADMIN_ROLE",
+      },
+    ],
   });
 
   const { request: req1 } = await publicClient.simulateContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
+    ...timeLockCOntract,
     functionName: "grantRole",
-    args: [proposeRole, governorAddress],
+    args: [proposeRole.result!, governorAddress],
     account,
   });
 
   const { request: req2 } = await publicClient.simulateContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
+    ...timeLockCOntract,
     functionName: "grantRole",
-    args: [executorRole, zeroAddress],
+    args: [executorRole.result!, zeroAddress],
     account,
   });
 
   const { request: req3 } = await publicClient.simulateContract({
-    address: timeLockAddress,
-    abi: timeLockABI,
+    ...timeLockCOntract,
     functionName: "revokeRole",
-    args: [adminRole, account],
+    args: [adminRole.result!, account],
     account,
   });
 
