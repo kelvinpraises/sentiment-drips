@@ -6,7 +6,7 @@ import {
   http,
   zeroAddress,
 } from "viem";
-import { goerli } from "viem/chains";
+import { sepolia } from "viem/chains";
 import {
   donationVotingMerkleDripABI,
   governorABI,
@@ -20,54 +20,90 @@ import {
   votingTokenBytecode,
 } from "./contract/bytecode-data";
 
-const walletClient = createWalletClient({
-  chain: goerli,
-  transport: custom(
-    typeof window !== "undefined" ? (window as any).ethereum : null
-  ),
-});
-
 const publicClient = createPublicClient({
-  chain: goerli,
+  chain: sepolia,
   transport: http(),
 });
+
+const hasWindow = typeof window !== "undefined";
+
+const walletClient = async () => {
+  const walletClient = createWalletClient({
+    chain: sepolia,
+    transport: custom(hasWindow ? (window as any).ethereum : null),
+  });
+
+  const chainId = await (window as any).ethereum.request({
+    method: "eth_chainId",
+  });
+
+  if (walletClient.chain.id !== parseInt(chainId, 16)) {
+    await walletClient.switchChain({ id: sepolia.id });
+  }
+
+  return walletClient;
+};
 
 export const deployVotingToken = async ({
   name,
   symbol,
   maxSupply,
+  callback,
 }: {
   name: string;
   symbol: string;
   maxSupply: bigint;
+  callback: (
+    txHash: { [key: string]: Address },
+    contractAddress: Address
+  ) => void;
 }) => {
-  const [account] = await walletClient.getAddresses();
-  const txHash = await walletClient.deployContract({
+  const wallet = await walletClient();
+  const [account] = await wallet.getAddresses();
+  const txHash = await (
+    await walletClient()
+  ).deployContract({
     abi: votingTokenABI,
     account,
     args: [name, symbol, maxSupply],
     bytecode: `0x${votingTokenBytecode}`,
   });
-  return txHash;
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  callback({ "Voting token hash": txHash }, receipt.contractAddress!);
 };
 
 export const deployTimeLock = async ({
   minDelaySec,
   proposers,
   executors,
+  callback,
 }: {
   minDelaySec: bigint;
   proposers: Address[];
   executors: Address[];
+  callback: (
+    txHash: { [key: string]: Address },
+    contractAddress: Address
+  ) => void;
 }) => {
-  const [account] = await walletClient.getAddresses();
-  const txHash = await walletClient.deployContract({
+  const wallet = await walletClient();
+  const [account] = await wallet.getAddresses();
+  const txHash = await (
+    await walletClient()
+  ).deployContract({
     abi: timeLockABI,
     account,
     args: [minDelaySec, proposers, executors],
     bytecode: `0x${timeLockBytecode}`,
   });
-  return txHash;
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  callback({ "TimeLock deploy hash": txHash }, receipt.contractAddress!);
 };
 
 export const deployGovernor = async ({
@@ -76,15 +112,23 @@ export const deployGovernor = async ({
   votingDelayBlocks,
   votingPeriodBlocks,
   quorumPercentage,
+  callback,
 }: {
   token: Address;
   timeLock: Address;
   votingDelayBlocks: number;
   votingPeriodBlocks: number;
   quorumPercentage: bigint;
+  callback: (
+    txHash: { [key: string]: Address },
+    contractAddress: Address
+  ) => void;
 }) => {
-  const [account] = await walletClient.getAddresses();
-  const txHash = await walletClient.deployContract({
+  const wallet = await walletClient();
+  const [account] = await wallet.getAddresses();
+  const txHash = await (
+    await walletClient()
+  ).deployContract({
     abi: governorABI,
     account,
     args: [
@@ -96,17 +140,24 @@ export const deployGovernor = async ({
     ],
     bytecode: `0x${governorBytecode}`,
   });
-  return txHash;
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  callback({ "Governor deploy hash": txHash }, receipt.contractAddress!);
 };
 
 export const setupGovernance = async ({
   timeLockAddress,
   governorAddress,
+  callback,
 }: {
   timeLockAddress: Address;
   governorAddress: Address;
+  callback: (txHash: { [key: string]: Address }) => void;
 }) => {
-  const [account] = await walletClient.getAddresses();
+  const wallet = await walletClient();
+  const [account] = await wallet.getAddresses();
 
   const proposeRole = await publicClient.readContract({
     address: timeLockAddress,
@@ -150,26 +201,42 @@ export const setupGovernance = async ({
     account,
   });
 
-  const req1TxHash = await walletClient.writeContract(req1);
-  const req2TxHash = await walletClient.writeContract(req2);
-  const req3TxHash = await walletClient.writeContract(req3);
+  const req1TxHash = await wallet.writeContract(req1);
+  const req2TxHash = await wallet.writeContract(req2);
+  const req3TxHash = await wallet.writeContract(req3);
 
-  return [req1TxHash, req2TxHash, req3TxHash];
+  callback({
+    "Grant governor proposeRole hash": req1TxHash,
+    "Grant everyone executorRole hash": req2TxHash,
+    "Revoke adminRole hash": req3TxHash,
+  });
 };
 
 export const deployStrategy = async ({
   alloAddress,
   strategyName,
+  callback,
 }: {
   alloAddress: Address;
   strategyName: string;
+  callback: (
+    txHash: { [key: string]: Address },
+    contractAddress: Address
+  ) => void;
 }) => {
-  const [account] = await walletClient.getAddresses();
-  const txHash = await walletClient.deployContract({
+  const wallet = await walletClient();
+  const [account] = await wallet.getAddresses();
+  const txHash = await (
+    await walletClient()
+  ).deployContract({
     abi: donationVotingMerkleDripABI,
     account,
     args: [alloAddress, strategyName],
     bytecode: `0x${donationVotingMerkleDripBytecode}`,
   });
-  return txHash;
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  callback({ "Strategy deploy hash": txHash }, receipt.contractAddress!);
 };
