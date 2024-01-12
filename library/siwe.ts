@@ -1,6 +1,6 @@
 import { SiweMessage } from "siwe";
 import { Address, createWalletClient, custom } from "viem";
-import { goerli } from "viem/chains";
+import { sepolia } from "viem/chains";
 
 interface UserData {
   name: string;
@@ -15,7 +15,7 @@ const origin = hasWindow ? window.location.origin : undefined;
 const BACKEND_ADDR = "http://localhost:3002";
 
 export const walletClient = createWalletClient({
-  chain: goerli,
+  chain: sepolia,
   transport: custom(hasWindow ? (window as any).ethereum : null),
 });
 
@@ -26,7 +26,7 @@ export function disconnectWallet(callback: () => void) {
 }
 
 export async function connectWallet(callback: (data: UserData) => void) {
-  await walletClient.switchChain({ id: goerli.id });
+  await walletClient.switchChain({ id: sepolia.id });
   const [address] = await walletClient.requestAddresses();
   const res = await signInWithEthereum(address);
   const userData: UserData = await res?.json();
