@@ -1,3 +1,4 @@
+import DeployedTxHashes from "../atoms/DeployedTxHash";
 import ProgressStep from "../atoms/Step";
 import {
   Status,
@@ -7,10 +8,14 @@ import {
 
 const NewEcosystemProgressItem = (prop: {
   progressSteps: { name: string; status: Status }[];
+  txHashes: { [key: string]: string };
 }) => {
   return (
-    <div className="w-full flex">
-      <div className={"flex flex-col"} style={{ gap: `${progressGap}rem` }}>
+    <div className="w-full flex gap-2 items-center">
+      <div
+        className={"flex flex-col min-w-fit"}
+        style={{ gap: `${progressGap}rem` }}
+      >
         {prop.progressSteps.map((step, index, items) => {
           return (
             <ProgressStep
@@ -22,24 +27,28 @@ const NewEcosystemProgressItem = (prop: {
           );
         })}
       </div>
-
-      {(() => {
-        const index = getLatestLoadingIndex(prop.progressSteps);
-        switch (index) {
-          case 0:
-            return <>not</>;
-          case 1:
-            return <>this is loading now!</>;
-          case 2:
-            return <>not</>;
-          case 3:
-            return <>not</>;
-          case 4:
-            return <>not</>;
-          default:
-            return <>not</>;
-        }
-      })()}
+      <div className="w-full flex items-center">
+        {(() => {
+          const index = getLatestLoadingIndex(prop.progressSteps);
+          switch (index) {
+            case 0:
+              return <p>Deploying the governance voting token</p>;
+            case 1:
+              return <p>Setting up the governance, timeLock contract</p>;
+            case 2:
+              return <p>...</p>;
+            case 3:
+              return (
+                <DeployedTxHashes
+                  note="Ecosystem created successfully (re-routing to Ecosystem page in 5 secs)"
+                  txHashes={prop.txHashes}
+                />
+              );
+            default:
+              return <>not</>;
+          }
+        })()}
+      </div>
     </div>
   );
 };

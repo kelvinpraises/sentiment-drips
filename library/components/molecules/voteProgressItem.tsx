@@ -1,3 +1,4 @@
+import DeployedTxHashes from "../atoms/DeployedTxHash";
 import ProgressStep from "../atoms/Step";
 import {
   Status,
@@ -7,10 +8,14 @@ import {
 
 const VoteProgressItem = (prop: {
   progressSteps: { name: string; status: Status }[];
+  txHashes: { [key: string]: string };
 }) => {
   return (
-    <div className="w-full flex">
-      <div className={"flex flex-col"} style={{ gap: `${progressGap}rem` }}>
+    <div className="w-full flex items-center">
+      <div
+        className={"flex flex-col min-w-fit"}
+        style={{ gap: `${progressGap}rem` }}
+      >
         {prop.progressSteps.map((step, index, items) => {
           return (
             <ProgressStep
@@ -22,24 +27,28 @@ const VoteProgressItem = (prop: {
           );
         })}
       </div>
-
-      {(() => {
-        const index = getLatestLoadingIndex(prop.progressSteps);
-        switch (index) {
-          case 0:
-            return <></>;
-          case 1:
-            return <></>;
-          case 2:
-            return <></>;
-          case 3:
-            return <></>;
-          case 4:
-            return <></>;
-          default:
-            return <></>;
-        }
-      })()}
+      <div className="w-full flex items-center">
+        {(() => {
+          const index = getLatestLoadingIndex(prop.progressSteps);
+          switch (index) {
+            case 0:
+              return <>Done</>;
+            case 1:
+              return <p>Interacting with strategy</p>;
+            case 2:
+              return <>...</>;
+            case 3:
+              return (
+                <DeployedTxHashes
+                  txHashes={prop.txHashes}
+                  note="Your vote has been submitted!"
+                />
+              );
+            default:
+              return <></>;
+          }
+        })()}
+      </div>
     </div>
   );
 };
