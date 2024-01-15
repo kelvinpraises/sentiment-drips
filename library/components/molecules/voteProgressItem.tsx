@@ -1,4 +1,4 @@
-import DeployedTxHashes from "../atoms/DeployedTxHash";
+import TxHashes from "../atoms/TxHash";
 import ProgressStep from "../atoms/Step";
 import {
   Status,
@@ -39,7 +39,7 @@ const VoteProgressItem = (prop: {
               return <>...</>;
             case 3:
               return (
-                <DeployedTxHashes
+                <TxHashes
                   txHashes={prop.txHashes}
                   note="Your vote has been submitted!"
                 />

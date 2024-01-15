@@ -1,4 +1,4 @@
-import DeployedTxHashes from "../atoms/DeployedTxHash";
+import TxHashes from "../atoms/TxHash";
 import ProgressStep from "../atoms/Step";
 import {
   Status,
@@ -39,7 +39,7 @@ const NewEcosystemProgressItem = (prop: {
               return <p>...</p>;
             case 3:
               return (
-                <DeployedTxHashes
+                <TxHashes
                   note="Ecosystem created successfully (re-routing to Ecosystem page in 5 secs)"
                   txHashes={prop.txHashes}
                 />
