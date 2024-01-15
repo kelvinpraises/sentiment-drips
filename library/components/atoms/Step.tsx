@@ -1,5 +1,6 @@
 import { cn } from "@/library/utils";
 import { Status, progressStepGap } from "../organisms/ProgressModal";
+import { CheckIcon } from "@radix-ui/react-icons";
 
 interface ProgressStepProp {
   index: number;
@@ -18,7 +19,7 @@ const ProgressStep = (prop: ProgressStepProp) => {
           progressStepGap,
           // prop.status === "loading" && "shadow-[#313B3D]",
           prop.status === "errored" && "after:bg-[#FF5353]  shadow-[#FF5353]",
-          prop.status === "passed" &&
+          prop.status === "done" &&
             "after:bg-[#313B3D] bg-[#313B3D] shadow-[#313B3D]",
           prop.last && "after:w-0"
         )}
@@ -31,8 +32,8 @@ const ProgressStep = (prop: ProgressStepProp) => {
               return <img className=" w-3/4 h-3/4" src={"/circles.svg"} />;
             case "errored":
               return <></>;
-            case "passed":
-              return <></>;
+            case "done":
+              return <CheckIcon className="text-white"/>;
             default:
               return <></>;
           }
