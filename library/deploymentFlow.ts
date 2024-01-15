@@ -60,19 +60,28 @@ export const deployVotingToken = async ({
 }) => {
   const wallet = await walletClient();
   const [account] = await wallet.getAddresses();
-  const txHash = await (
-    await walletClient()
-  ).deployContract({
+
+  const txHash = await wallet.deployContract({
     abi: votingTokenABI,
     account,
     args: [name, symbol, maxSupply],
     bytecode: `0x${votingTokenBytecode}`,
+    gas: BigInt(5_000_000),
   });
   const receipt = await publicClient.waitForTransactionReceipt({
     hash: txHash,
   });
 
-  callback({ "Voting token hash": txHash }, receipt.contractAddress!);
+  await wallet.watchAsset({
+    type: "ERC20",
+    options: {
+      address: receipt.contractAddress!,
+      decimals: 18,
+      symbol,
+    },
+  });
+
+  callback({ "Token creation hash": txHash }, receipt.contractAddress!);
 };
 
 export const deployTimeLock = async ({
@@ -94,14 +103,15 @@ export const deployTimeLock = async ({
   const txHash = await wallet.deployContract({
     abi: timeLockABI,
     account,
-    args: [minDelaySec, proposers, executors],
+    args: [account, minDelaySec, proposers, executors],
     bytecode: `0x${timeLockBytecode}`,
+    gas: BigInt(5_000_000),
   });
   const receipt = await publicClient.waitForTransactionReceipt({
     hash: txHash,
   });
 
-  callback({ "TimeLock deploy hash": txHash }, receipt.contractAddress!);
+  callback({ "TimeLock deployment hash": txHash }, receipt.contractAddress!);
 };
 
 export const deployGovernor = async ({
@@ -135,12 +145,13 @@ export const deployGovernor = async ({
       quorumPercentage,
     ],
     bytecode: `0x${governorBytecode}`,
+    gas: BigInt(5_000_000),
   });
   const receipt = await publicClient.waitForTransactionReceipt({
     hash: txHash,
   });
 
-  callback({ "Governor deploy hash": txHash }, receipt.contractAddress!);
+  callback({ "Governor deployment hash": txHash }, receipt.contractAddress!);
 };
 
 export const setupGovernance = async ({
@@ -200,9 +211,9 @@ export const setupGovernance = async ({
   const req3TxHash = await wallet.writeContract(req3);
 
   callback({
-    "Grant governor proposeRole hash": req1TxHash,
-    "Grant everyone executorRole hash": req2TxHash,
-    "Revoke adminRole hash": req3TxHash,
+    "Governor granted proposer role hash": req1TxHash,
+    "Everyone granted executor role hash": req2TxHash,
+    "TimeLock admin revoked role hash": req3TxHash,
   });
 };
 
@@ -227,10 +238,11 @@ export const deployStrategy = async ({
     account,
     args: [alloAddress, strategyName],
     bytecode: `0x${donationVotingMerkleDripBytecode}`,
+    gas: BigInt(5_000_000),
   });
   const receipt = await publicClient.waitForTransactionReceipt({
     hash: txHash,
   });
 
-  callback({ "Strategy deploy hash": txHash }, receipt.contractAddress!);
+  callback({ "Strategy deployment hash": txHash }, receipt.contractAddress!);
 };
