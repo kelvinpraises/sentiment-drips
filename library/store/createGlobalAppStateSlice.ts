@@ -6,6 +6,12 @@ type State = {
   userName: string;
   userAvatarUrl: string;
   modalElementId: string;
+  modalStep: {
+    status: string;
+  }[];
+  txHashes: {
+    [key: string]: string;
+  };
 };
 
 type Actions = {
@@ -14,14 +20,19 @@ type Actions = {
   setUserName: (name: string) => void;
   setUserAvatarUrl: (avatarUrl: string) => void;
   setModalElementId: (id: string) => void;
+  setModalStep: (modalStep: { status: string }[]) => void;
+  setModalStepIndex: (index: number, item: { status: string }) => void;
+  setTransactionHashes: (txHashes: { [key: string]: string }) => void;
 };
 
-export default immer<State & Actions>((set) => ({
+export default immer<State & Actions>((set, get) => ({
   appActive: false,
   userAddress: "",
   userName: "",
   userAvatarUrl: "",
   modalElementId: "",
+  modalStep: [],
+  txHashes: {},
 
   setAppActive: (isActive) =>
     set((state) => {
@@ -46,5 +57,24 @@ export default immer<State & Actions>((set) => ({
   setModalElementId: (id) =>
     set((state) => {
       state.modalElementId = id;
+    }),
+
+  setModalStep: (modalStep) =>
+    set((state) => {
+      state.modalStep = modalStep;
+    }),
+
+  setModalStepIndex: (index, item) => {
+    const newSteps = [...get().modalStep];
+    newSteps[index] = item;
+
+    set((state) => {
+      state.modalStep = newSteps;
+    });
+  },
+
+  setTransactionHashes: (txHashes) =>
+    set((state) => {
+      state.txHashes = txHashes;
     }),
 }));
