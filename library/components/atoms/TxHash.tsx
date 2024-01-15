@@ -1,7 +1,7 @@
 import { ellipsisAddress } from "@/library/utils";
 import Button from "./Button";
 
-const DeployedTxHashes = ({
+const TxHashes = ({
   note,
   txHashes,
 }: {
@@ -40,4 +40,4 @@ const DeployedTxHashes = ({
   );
 };
 
-export default DeployedTxHashes;
+export default TxHashes;
