@@ -1,19 +1,29 @@
 "use client";
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 
+import { createEcosystem } from "@/library/backendAPI";
 import Button from "@/library/components/atoms/Button";
 import Input from "@/library/components/atoms/Input";
 import Toggle from "@/library/components/atoms/Toggle";
 import TextHead from "@/library/components/molecules/TextHead";
 import ProgressModal from "@/library/components/organisms/ProgressModal";
+import {
+  deployGovernor,
+  deployTimeLock,
+  deployVotingToken,
+  setupGovernance,
+} from "@/library/deploymentFlow";
+import { useStore } from "@/library/store/useStore";
+import { useRouter } from "next/navigation";
+import { Address, parseEther } from "viem";
 
 interface NewEcosystem {
   name: string;
   logoURL: string;
   description: string;
   governanceReady: boolean;
-  tokenName: string;
-  tokenSymbol: string;
+  governanceTokenName: string;
+  governanceTokenSymbol: string;
   maxSupply: number;
   mintTo: string;
   votingDelay: number;
@@ -27,8 +37,8 @@ const initialState = {
   logoURL: "",
   description: "",
   governanceReady: true,
-  tokenName: "",
-  tokenSymbol: "",
+  governanceTokenName: "",
+  governanceTokenSymbol: "",
   maxSupply: 0,
   mintTo: "",
   votingDelay: 0,
@@ -78,7 +88,94 @@ const stateReducer = (
 };
 
 const page = () => {
+  const router = useRouter();
   const [values, updateValues] = useReducer(stateReducer, initialState);
+  const setModalStep = useStore((state) => state.setModalStep);
+  const setTransactionHashes = useStore((state) => state.setTransactionHashes);
+  const setModalStepIndex = useStore((state) => state.setModalStepIndex);
+
+  useEffect(() => {
+    setModalStep([
+      { status: "loading" },
+      { status: "none" },
+      { status: "none" },
+      { status: "none" },
+    ]);
+  }, []);
+
+  const handleCreateNewEcosystem = async () => {
+    let txHashes = {};
+    let governanceTokenAddress: Address = "0x";
+    let timeLockAddress: Address = "0x";
+    let governorAddress: Address = "0x";
+
+    await deployVotingToken({
+      name: values.governanceTokenName,
+      symbol: values.governanceTokenSymbol,
+      maxSupply: parseEther(values.maxSupply.toString()),
+      callback: (txHash: { [key: string]: Address }, address: Address) => {
+        txHashes = { ...txHashes, ...txHash };
+        governanceTokenAddress = address;
+      },
+    });
+
+    setModalStepIndex(0, { status: "done" });
+    setModalStepIndex(1, { status: "loading" });
+
+    await deployTimeLock({
+      minDelaySec: BigInt(values.minDelay),
+      proposers: [],
+      executors: [],
+      callback: (txHash: { [key: string]: Address }, address: Address) => {
+        txHashes = { ...txHashes, ...txHash };
+        timeLockAddress = address;
+      },
+    });
+
+    await deployGovernor({
+      token: governanceTokenAddress,
+      timeLock: timeLockAddress,
+      votingDelayBlocks: values.votingDelay,
+      votingPeriodBlocks: values.votingPeriod,
+      quorumPercentage: BigInt(values.quorum),
+      callback: (txHash: { [key: string]: Address }, address: Address) => {
+        txHashes = { ...txHashes, ...txHash };
+        governorAddress = address;
+      },
+    });
+
+    await setupGovernance({
+      timeLockAddress: timeLockAddress,
+      governorAddress: governorAddress,
+      callback: (txHash: { [key: string]: Address }) => {
+        txHashes = { ...txHashes, ...txHash };
+      },
+    });
+
+    setTransactionHashes(txHashes);
+
+    setModalStepIndex(1, { status: "done" });
+    setModalStepIndex(2, { status: "loading" });
+
+    setModalStepIndex(2, { status: "done" });
+    setModalStepIndex(3, { status: "loading" });
+
+    createEcosystem(
+      {
+        ...values,
+        governanceTokenAddress,
+        timeLockAddress,
+        governorAddress,
+        createdAt: Date.now(),
+      },
+      (ecosystem: string) => {
+        setModalStepIndex(3, { status: "done" });
+        setTimeout(() => {
+          router.push("/ecosystems/" + ecosystem);
+        }, 10_000);
+      }
+    );
+  };
 
   return (
     <main
@@ -121,14 +218,18 @@ const page = () => {
           <Input
             label="Token Name"
             input={true}
-            value={values.tokenName}
-            onChange={(e) => updateValues({ tokenName: e.target.value })}
+            value={values.governanceTokenName}
+            onChange={(e) =>
+              updateValues({ governanceTokenName: e.target.value })
+            }
           />
           <Input
             label="Token Symbol"
             input={true}
-            value={values.tokenSymbol}
-            onChange={(e) => updateValues({ tokenSymbol: e.target.value })}
+            value={values.governanceTokenSymbol}
+            onChange={(e) =>
+              updateValues({ governanceTokenSymbol: e.target.value })
+            }
           />
         </div>
         <Input
@@ -151,7 +252,7 @@ const page = () => {
         <h2 className="font-bold text-xl">DAO Governance</h2>
         <div className="flex gap-4">
           <Input
-            label="Voting Delay"
+            label="Voting Delay (in blocks)"
             input={true}
             value={values.votingDelay.toString()}
             onChange={(e) =>
@@ -159,7 +260,7 @@ const page = () => {
             }
           />
           <Input
-            label="Voting Period"
+            label="Voting Period (in blocks)"
             input={true}
             value={values.votingPeriod.toString()}
             onChange={(e) =>
@@ -168,13 +269,13 @@ const page = () => {
           />
         </div>
         <Input
-          label="Quorum %"
+          label="Quorum % (votes needed for a proposal to pass)"
           input={true}
           value={values.quorum.toString()}
           onChange={(e) => updateValues({ quorum: parseFloat(e.target.value) })}
         />
         <Input
-          label="Min Delay (how long to waits before TimeLock passes)"
+          label="Min Delay (seconds to wait before proposal goes live)"
           input={true}
           value={values.minDelay.toString()}
           onChange={(e) =>
@@ -182,15 +283,10 @@ const page = () => {
           }
         />
       </div>
-      <ProgressModal step={0}>
+      <ProgressModal modalItem={"newEcosystem"}>
         <Button
           text={"Create Ecosystem"}
-          handleClick={
-            () => {}
-            // createProject(values, (d: string) => {
-            //   router.push("/projects/" + d);
-            // })
-          }
+          handleClick={handleCreateNewEcosystem}
         />
       </ProgressModal>
     </main>
