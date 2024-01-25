@@ -57,7 +57,6 @@ CREATE TABLE AllocatedProjects (
 CREATE TABLE Projects (
     projectId INTEGER PRIMARY KEY,
     createdBy TEXT NOT NULL,
-    tokensRequested REAL NOT NULL,
     emoji TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -80,6 +79,7 @@ CREATE TABLE ShowcasedProjects (
     ecoFundId INTEGER NOT NULL,
     projectId INTEGER NOT NULL,
     recipientId TEXT NOT NULL,
+    tokensRequested REAL NOT NULL,
     status INTEGER NOT NULL,
     FOREIGN KEY (ecoFundId) REFERENCES EcoFunds(ecoFundId),
     FOREIGN KEY (projectId) REFERENCES Projects(projectId)
