@@ -64,7 +64,7 @@ app.post("/verify", async function (req, res) {
           rows[0] || {
             name: "",
             address: req.session.siwe?.address,
-            avatar: "",
+            avatarUrl: "",
           }
         );
       });
@@ -128,7 +128,7 @@ app.get("/verifyAuthentication", function (req, res) {
       { ...(rows[0] as Object), authenticated: true } || {
         name: "",
         address: req.session.siwe?.address,
-        avatar: "",
+        avatarUrl: "",
         authenticated: true,
       }
     );
